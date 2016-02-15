@@ -1,0 +1,74 @@
+*, *:before, *:after {
+	border-box: box-sizing;
+}
+
+body {
+	background-color: $eggshell;
+}
+
+header {
+	background-color: $purple;
+	margin-bottom: 2em;
+	overflow: auto;
+
+	h1 {
+		@include center;
+	}
+}
+
+main {
+	@include clearfix;
+	@include center;
+}
+
+main > section {
+	width: 50%;
+	float: left;
+}
+
+.avatar {
+	margin: 0 auto;
+	width: 60%;
+}
+
+footer {
+	@include center;
+	border-top: 1px solid $purple;
+}
+
+a {
+	text-decoration: none;
+}
+
+h1, h2, h3, p {
+	font-family: "Poppins", "sans-serif"
+}
+
+h1 {
+	color: $white;
+	font-size: 1em;
+	font-weight: 300;
+	text-transform: uppercase;
+}
+
+h2 {
+	color: $purple;
+	font-size: em(36px);
+	font-weight: 700;
+	margin: em(12px, 36px) 0;
+}
+
+h3 {
+	color: $purple-med;
+	font-size: em(24px);
+	font-weight: 500;
+}
+
+p {
+	color: $purple-dark;
+	font-size: 1em;
+	font-weight: 300;
+	line-height: 21em/16em;
+	margin: em(8px) 0;
+}
+

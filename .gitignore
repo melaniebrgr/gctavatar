@@ -3,3 +3,5 @@ gctavatar.sublime-workspace
 config.codekit
 bower_components/
 js/min/
+dev/
+css/.sass-cache/
