@@ -385,14 +385,22 @@ main > section {
   float: left; }
 
 .avatar {
+  background-color: #fff;
+  border: 8px solid #4d467a;
+  border-radius: 50%;
   margin: 0 auto;
-  width: 60%; }
+  width: 60%;
+  padding: 1em; }
+  .avatar #boy {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%); }
 
 footer {
   width: 80%;
   margin-left: auto;
   margin-right: auto;
-  border-top: 1px solid #4d467a; }
+  border-top: 2px solid #4d467a; }
 
 a {
   text-decoration: none; }

@@ -27,13 +27,22 @@ main > section {
 }
 
 .avatar {
+	background-color: $white;
+	border: 8px solid $purple;
+	border-radius: 50%;
 	margin: 0 auto;
 	width: 60%;
+	padding: 1em;
+	#boy {
+		position: relative;
+		top: 50%;
+		transform: translateY(-50%);
+	}
 }
 
 footer {
 	@include center;
-	border-top: 1px solid $purple;
+	border-top: 2px solid $purple;
 }
 
 a {

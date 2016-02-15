@@ -1,4 +1,8 @@
 $(function() {
+var w = $(".avatar").width() - 8;
+$(".avatar").css( {'height':w +'px'} );
+
+//Animation	
 	var $boy = $("#boy");
 
 	var Tl = new TimelineMax();
