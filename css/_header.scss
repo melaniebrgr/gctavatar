@@ -1,0 +1,9 @@
+header#header {
+	background-color: $purple;
+	margin-bottom: 2em;
+	overflow: auto;
+
+	h1 {
+		@include center;
+	}
+}

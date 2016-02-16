@@ -1,12 +1,16 @@
+function log(m) {
+	console.log(m);
+}
+
 $(function() {
-var w = $(".avatar").width() - 8;
-$(".avatar").css( {'height':w +'px'} );
+var $avatar = $(".avatar");
+$avatar.height( $avatar.width() );
 
 //Animation	
 	var $boy = $("#boy");
 
 	var Tl = new TimelineMax();
 	Tl
-		.set($boy, {autoAlpha: 0, transformOrigin: 'center center', scale: 0.5})
+		.set($boy, {autoAlpha: 0, scale: 0.5})
 		.to($boy, 0.8, {autoAlpha: 1, scale: 1}, '+=1');
 });
