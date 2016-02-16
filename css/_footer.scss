@@ -1,4 +1,10 @@
 footer#footer {
 	@include center;
+
 	border-top: 2px solid $purple;
+    bottom: 0;
+	height: em(44px);
+	left: 50%;
+	position: absolute;
+    transform: translateX(-50%);
 }
