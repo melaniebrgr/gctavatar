@@ -365,7 +365,7 @@ body {
   margin: 0 0 2.75em; }
 
 main {
-  width: 80%;
+  width: 70%;
   margin-left: auto;
   margin-right: auto; }
   main:after {
@@ -376,8 +376,11 @@ main {
     clear: both;
     height: 0; }
   main > section {
-    width: 50%;
     float: left; }
+    main > section.visualization {
+      width: 35%; }
+    main > section.description {
+      width: 65%; }
 
 a {
   text-decoration: none; }
@@ -414,7 +417,7 @@ header#header {
   margin-bottom: 2em;
   overflow: auto; }
   header#header h1 {
-    width: 80%;
+    width: 70%;
     margin-left: auto;
     margin-right: auto; }
 
@@ -423,15 +426,18 @@ header#header {
   border: 8px solid #4d467a;
   border-radius: 50%;
   margin: 0 auto;
-  width: 60%;
+  width: 100%;
   padding: 1em; }
   .avatar #boy {
     position: relative;
     top: 50%;
     transform: translateY(-50%); }
 
+.description {
+  padding: 0 0 0 2.5em; }
+
 footer#footer {
-  width: 80%;
+  width: 70%;
   margin-left: auto;
   margin-right: auto;
   border-top: 2px solid #4d467a;

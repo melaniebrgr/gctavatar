@@ -17,8 +17,13 @@ main {
 	@include center;
 	
 	> section {
-		width: 50%;
 		float: left;
+		&.visualization {
+			width: 35%;
+		}
+		&.description {
+			width: 65%;
+		}
 	}
 }
 
