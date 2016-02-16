@@ -7,7 +7,7 @@ $post_field_array = array(
   'client_secret' => '122f530d3904f0781b8f637d8aeefa3c',
   'grant_type'    => 'authorization_code',
   'code'          => $code,
-  'redirect_uri'  => 'http://thinkful.23andme/step-two.php',
+  'redirect_uri'  => 'http://localhost:8888/step-two.php',
   'scope'         => 'basic genomes');
 
 // Encode the field values for HTTP.
@@ -50,7 +50,10 @@ curl_close($curl);
 
 print_r($res);
 ?>
-
+<script> 
+var apiJSON = <?php print_r($res) ?>;
+console.log(apiJSON);
+</script>
 <script>
 //location.href="endpoints.html?token=<?=$access_token?>"
 </script>
