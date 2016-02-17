@@ -8,7 +8,7 @@ $post_field_array = array(
   'grant_type'    => 'authorization_code',
   'code'          => $code,
   'redirect_uri'  => 'http://melanies-macbook-pro.local:5757/step-two.php',
-  'scope'         => 'basic genomes');
+  'scope'         => 'basic names phenotypes:read:sex ancestry analyses');
 
 // Encode the field values for HTTP.
 $post_fields = '';
@@ -28,12 +28,7 @@ $encoded_json = curl_exec($ch);
 $response = json_decode($encoded_json, true);
 $access_token = $response['access_token'];
 
-// The access_token will be something like:
-//print $access_token;
-
-//curl https://api.23andme.com/1/user/ -H "Authorization: Bearer 1e345d79febe7767596d8c0d1b20574c"
-
-
+// Use access token to call enpoints
 $curl = curl_init();
 
 $headers = array();
