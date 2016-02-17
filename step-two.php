@@ -8,7 +8,7 @@ $post_field_array = array(
   'grant_type'    => 'authorization_code',
   'code'          => $code,
   'redirect_uri'  => 'http://melanies-macbook-pro.local:5757/step-two.php',
-  'scope'         => 'basic names phenotypes:read:sex ancestry analyses');
+  'scope'         => 'basic names phenotypes:read:sex ancestry rs12913832 rs2153271');
 
 // Encode the field values for HTTP.
 $post_fields = '';
@@ -29,6 +29,12 @@ $response = json_decode($encoded_json, true);
 $access_token = $response['access_token'];
 
 // Use access token to call enpoints
+// basic: /1/demo/user/
+// names: /1/demo/names/profile_id/ -> /1/demo/names/SP1_FATHER_V4/
+// ancestry: /1/demo/ancestry/profile_id/ -> /1/demo/ancestry/SP1_FATHER_V4/
+// phenotype: /1/demo/phenotypes/profile_id/phenotype_id/ -> /1/demo/phenotypes/SP1_FATHER_V4/sex/ ??? Doesn't work
+// genotypes:  /1/demo/genotypes/profile_id/?locations=&unfiltered=&format=... -> /1/demo/genotypes/SP1_FATHER_V4/?locations=rs12913832
+
 $curl = curl_init();
 
 $headers = array();
@@ -36,7 +42,7 @@ $headers[] = 'Authorization: Bearer ' . $access_token;
 
 curl_setopt_array($curl, array(
     CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_URL => 'https://api.23andme.com/1/demo/user/'
+    CURLOPT_URL => 'https://api.23andme.com/1/demo/genotypes/SP1_FATHER_V4/?locations=rs12913832%20rs2153271'
 ));
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 
