@@ -1,4 +1,6 @@
 <?php
+//CALLBACK URI FROM 23ANDME DURING OAUTH
+
 $code = $_GET['code'];
 
 // We will post these fields to 23andMe.
@@ -41,19 +43,21 @@ curl_setopt_array($curl, array(
 ));
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $res = curl_exec($curl);
+$decodeRes = json_decode($res, true);
 curl_close($curl);
 
 //Y names: /1/demo/names/profile_id/ -> /1/demo/names/SP1_FATHER_V4/
-$curlz = curl_init();
+$curl = curl_init();
 $headers = array();
 $headers[] = 'Authorization: Bearer ' . $access_token;
-curl_setopt_array($curlz, array(
+curl_setopt_array($curl, array(
     CURLOPT_RETURNTRANSFER => 1,
     CURLOPT_URL => 'https://api.23andme.com/1/demo/names/SP1_FATHER_V4/'
 ));
-curl_setopt($curlz, CURLOPT_HTTPHEADER, $headers);
-$res1 = curl_exec($curlz);
-curl_close($curlz);
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+$res1 = curl_exec($curl);
+$decodeRes1 = json_decode($res1, true);
+curl_close($curl);
 
 //Y ancestry: /1/demo/ancestry/profile_id/ -> /1/demo/ancestry/SP1_FATHER_V4/
 $curl = curl_init();
@@ -65,6 +69,7 @@ curl_setopt_array($curl, array(
 ));
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $res2 = curl_exec($curl);
+$decodeRes2 = json_decode($res2, true);
 curl_close($curl);
 
 //Y genotypes:  /1/demo/genotypes/profile_id/?locations=&unfiltered=&format=... -> /1/demo/genotypes/SP1_FATHER_V4/?locations=rs12913832
@@ -77,6 +82,7 @@ curl_setopt_array($curl, array(
 ));
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $res3 = curl_exec($curl);
+$decodeRes3 = json_decode($res3, true);
 curl_close($curl);
 
 ?>
