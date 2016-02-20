@@ -8,7 +8,7 @@ $post_field_array = array(
   'grant_type'    => 'authorization_code',
   'code'          => $code,
   'redirect_uri'  => 'http://melanies-macbook-pro.local:5757/step-two.php',
-  'scope'         => 'basic names phenotypes:read:sex ancestry rs12913832 rs2153271');
+  'scope'         => 'basic names phenotypes:read:sex ancestry rs12913832 rs2153271 rs7349332 rs10034228 rs3827760 rs12896399 rs1667394 rs12821256 rs1805007 rs1805008 i3002507');
 
 // Encode the field values for HTTP.
 $post_fields = '';
@@ -29,12 +29,9 @@ $response = json_decode($encoded_json, true);
 $access_token = $response['access_token'];
 
 // Use access token to call enpoints
-//Y basic: /1/demo/user/
-//Y names: /1/demo/names/profile_id/ -> /1/demo/names/SP1_FATHER_V4/
-//Y ancestry: /1/demo/ancestry/profile_id/ -> /1/demo/ancestry/SP1_FATHER_V4/
 //N phenotype: /1/demo/phenotypes/profile_id/phenotype_id/ -> /1/demo/phenotypes/SP1_FATHER_V4/sex/
-//Y genotypes:  /1/demo/genotypes/profile_id/?locations=&unfiltered=&format=... -> /1/demo/genotypes/SP1_FATHER_V4/?locations=rs12913832
 
+//Y basic: /1/demo/user/
 $curl = curl_init();
 $headers = array();
 $headers[] = 'Authorization: Bearer ' . $access_token;
@@ -46,42 +43,65 @@ curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $res = curl_exec($curl);
 curl_close($curl);
 
+//Y names: /1/demo/names/profile_id/ -> /1/demo/names/SP1_FATHER_V4/
 $curlz = curl_init();
 $headers = array();
 $headers[] = 'Authorization: Bearer ' . $access_token;
 curl_setopt_array($curlz, array(
     CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_URL => 'https://api.23andme.com/1/demo/names/' . $res["profiles"][1]["id"] . '/'
+    CURLOPT_URL => 'https://api.23andme.com/1/demo/names/SP1_FATHER_V4/'
 ));
 curl_setopt($curlz, CURLOPT_HTTPHEADER, $headers);
 $res1 = curl_exec($curlz);
 curl_close($curlz);
 
-
+//Y ancestry: /1/demo/ancestry/profile_id/ -> /1/demo/ancestry/SP1_FATHER_V4/
 $curl = curl_init();
 $headers = array();
 $headers[] = 'Authorization: Bearer ' . $access_token;
 curl_setopt_array($curl, array(
     CURLOPT_RETURNTRANSFER => 1,
-    CURLOPT_URL => 'https://api.23andme.com/1/demo/names/'
+    CURLOPT_URL => 'https://api.23andme.com/1/demo/ancestry/SP1_FATHER_V4/'
 ));
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $res2 = curl_exec($curl);
 curl_close($curl);
+
+//Y genotypes:  /1/demo/genotypes/profile_id/?locations=&unfiltered=&format=... -> /1/demo/genotypes/SP1_FATHER_V4/?locations=rs12913832
+$curl = curl_init();
+$headers = array();
+$headers[] = 'Authorization: Bearer ' . $access_token;
+curl_setopt_array($curl, array(
+    CURLOPT_RETURNTRANSFER => 1,
+    CURLOPT_URL => 'https://api.23andme.com/1/demo/genotypes/SP1_FATHER_V4/?locations=rs12913832%20rs2153271%20rs7349332%20rs10034228%20rs3827760%20rs12896399%20rs1667394%20rs12821256%20rs1805007%20rs1805008%20i3002507'
+));
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+$res3 = curl_exec($curl);
+curl_close($curl);
+
 ?>
 <script> 
 var apiJSON = <?php print_r($res) ?>;
 var apiJSON1 = <?php print_r($res1) ?>;
 var apiJSON2 = <?php print_r($res2) ?>;
-console.log(apiJSON);
-console.log(apiJSON1);
-console.log(apiJSON2);
+var apiJSON3 = <?php print_r($res3) ?>;
+
+var traits = {
+  firstName: apiJSON1.first_name,
+  lastName: apiJSON1.last_name,
+  ancestry: apiJSON2.ancestry.sub_populations,
+  genotypes: [
+    { trait: "eye colour", marker: "rs12913832", genotype: apiJSON3.rs12913832 },
+    { trait: "freckling", marker: "rs2153271", genotype: apiJSON3.rs2153271 },
+    { trait: "hair curl", marker: "rs7349332", genotype: apiJSON3.rs7349332 },
+    { trait: "nearsightedness and farsightedness", marker: "rs10034228", genotype: apiJSON3.rs10034228 },
+    { trait: "hair thickness", marker: "rs3827760", genotype: apiJSON3.rs3827760 },
+    { trait: "blond hair", marker: ["rs12896399", "rs1667394", "rs12821256"], genotype: [apiJSON3.rs12896399, apiJSON3.rs1667394, apiJSON3.rs12821256] },
+    { trait: "red hair", marker: ["rs1805007", "rs1805008", "i3002507"], genotype: [apiJSON3.rs1805007, apiJSON3.rs1805008, apiJSON3.i3002507] } 
+  ]
+}
+console.log(traits);
 // console.log( <?php print_r($res["email"]) ?> );
-var test = JSON.parse( JSON.stringify(<?php print_r($res) ?>) );
-console.log( test["email"] );
-
-
-</script>
-<script>
-//location.href="endpoints.html?token=<?=$access_token?>"
+// var test = JSON.parse( JSON.stringify(<?php print_r($res) ?>) );
+// console.log( test["email"] );
 </script>
