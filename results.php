@@ -36,13 +36,9 @@ curl_setopt_array($curl, array(
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $res2 = curl_exec($curl);
 $decodeRes2 = json_decode($res2, true);
-// curl_close($curl);
 
-// //Y genotypes:  /1/demo/genotypes/profile_id/?locations=&unfiltered=&format=... -> /1/demo/genotypes/SP1_FATHER_V4/?locations=rs12913832
-// $curl = curl_init();
-// $headers = array();
-// $headers[] = 'Authorization: Bearer ' . $access_token;
-$endpoint = 'https://api.23andme.com/1/demo/genotypes/SP1_FATHER_V4/?locations=rs12913832%20rs2153271%20rs7349332%20rs10034228%20rs3827760%20rs12896399%20rs1667394%20rs12821256%20rs1805007%20rs1805008%20i3002507';
+// get Genotypes: /1/demo/genotypes/profile_id/?locations=&unfiltered=&format=...
+$endpoint = 'https://api.23andme.com/1/demo/genotypes/'. $decodeRes["profiles"][1]["id"] . '/?format=embedded&locations=rs12913832%20rs2153271%20rs7349332%20rs10034228%20rs3827760%20rs12896399%20rs1667394%20rs12821256%20rs1805007%20rs1805008%20i3002507';
 curl_setopt_array($curl, array(
     CURLOPT_RETURNTRANSFER => 1,
     CURLOPT_URL => $endpoint
@@ -56,7 +52,7 @@ $traits = array();
 $traits["firstName"] = $decodeRes1["first_name"];
 $traits["lastName"] = $decodeRes1["last_name"];
 $traits["ancestry"] = $decodeRes2["ancestry"]["sub_populations"];
-$traits["genotypes"] = $decodeRes3;
+$traits["genotypes"] = $decodeRes3["genotypes"];
 
 header('Content-Type: application/json');
 echo json_encode($traits);
