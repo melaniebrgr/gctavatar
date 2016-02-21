@@ -46,6 +46,27 @@ curl_setopt_array($curl, array(
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $res3 = curl_exec($curl);
 $decodeRes3 = json_decode($res3, true);
+
+// get Phenotype:sex /1/phenotypes/profile_id/phenotype_id/
+$endpoint = 'https://api.23andme.com/1/phenotypes/' . $decodeRes["profiles"][1]["id"] . '/sex/';
+curl_setopt_array($curl, array(
+    CURLOPT_RETURNTRANSFER => 1,
+    CURLOPT_URL => $endpoint
+));
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+$res4 = curl_exec($curl);
+$decodeRes4 = json_decode($res4, true);
+
+// get Neanderthal percentage: /1/demo/neanderthal/profile_id/
+$endpoint = 'https://api.23andme.com/1/demo/neanderthal/' . $decodeRes["profiles"][1]["id"] . '/';
+curl_setopt_array($curl, array(
+    CURLOPT_RETURNTRANSFER => 1,
+    CURLOPT_URL => $endpoint
+));
+curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+$res5 = curl_exec($curl);
+$decodeRes5 = json_decode($res5, true);
+
 curl_close($curl);
 
 $traits = array();
@@ -53,6 +74,8 @@ $traits["firstName"] = $decodeRes1["first_name"];
 $traits["lastName"] = $decodeRes1["last_name"];
 $traits["ancestry"] = $decodeRes2["ancestry"]["sub_populations"];
 $traits["genotypes"] = $decodeRes3["genotypes"];
+$traits["sex"] = $decodeRes4;
+$traits["neanderthal"] = $decodeRes5["neanderthal"];
 
 header('Content-Type: application/json');
 echo json_encode($traits);
