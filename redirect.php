@@ -9,7 +9,7 @@ $post_field_array = array(
   'client_secret' => '122f530d3904f0781b8f637d8aeefa3c',
   'grant_type'    => 'authorization_code',
   'code'          => $code,
-  'redirect_uri'  => 'http://localhost:8888/test2.php',
+  'redirect_uri'  => 'http://localhost:8888/redirect.php',
   'scope'         => 'basic names phenotypes:read:sex ancestry rs12913832 rs2153271 rs7349332 rs10034228 rs3827760 rs12896399 rs1667394 rs12821256 rs1805007 rs1805008 i3002507');
 
 // Encode the field values for HTTP.
@@ -41,5 +41,5 @@ $httponly = false;
 setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 
 //Redirect to index.php
-header("Location: http://localhost:8888/index.php");
+header("Location: http://localhost:8888/index.html");
 ?>
