@@ -39,6 +39,6 @@ $secure = false;
 $httponly = false;
 setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 
-// Redirect to index.php
+// Redirect to index.html
 header("Location: http://localhost:8888/index.html");
 ?>
