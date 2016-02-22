@@ -4,27 +4,25 @@
 	<meta charset="UTF-8">
 	<title>GCTAvatar</title>
 	<link href='https://fonts.googleapis.com/css?family=Poppins:300,500,700' rel='stylesheet' type='text/css'>
-	<link rel="stylesheet" type="text/css" href="css/styles.css">
+	<!-- <link rel="stylesheet" type="text/css" href="css/styles.css"> -->
 </head>
 <body>
-	<header id="header">
+	<header class="header">
 		<h1>GCTAvatar</h1>
 	</header>
 	<main>
-		<section class="visualization">
-			<div class="avatar">
+		<section class="vis">
+			<div class="vis__avatar">
 			</div>
 		</section>
-		<section class="description">
-			<h2>Your GCTAvatar results:</h2>
-			<p class="getAuth"><a href="https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry rs12913832 rs2153271 rs7349332 rs10034228 rs3827760 rs12896399 rs1667394 rs12821256 rs1805007 rs1805008 i3002507">Get Authorized!</a></p>
-			
+		<section class="text">
+			<h2>An avatar as unique as you are</h2>
+			<p>Connect with 23andMe to create an avatar based on your DNA. Not genotyped? We’ll use example data for <a href="https://customercare.23andme.com/hc/en-us/articles/202907540-Who-are-the-Mendels-" target="_blank">Gregor and Lilly Mendel</a> instead.</p>
+			<button class="getAuth">connect with 23andMe</button>
 		</section>
 	</main>
-	<footer id="footer">
-		<ul>
-			<li>footnote 1</li>
-		</ul>
+	<footer class="footer">
+		<span>&copy; 2016 Melanie Burger</span>
 	</footer>
 	
 	<script src="js/jquery.min.js"></script>
