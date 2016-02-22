@@ -5,7 +5,7 @@ function log(m) {
 
 $(function() {
 
-// If access_token is available in the cookie, skip authorization
+// If access_token is available in the cookie skip authorization
 if ( Cookies.get('access_token') ) {
 	$(".getAuth").remove();
 	$(".description").append("<button class='getData'>Get Data</button>");
