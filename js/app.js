@@ -8,39 +8,57 @@ var APP = APP || {};
 
 APP.model = function(data) {
 	var publicModel = data;
+
+	var User = function() {
+		// Create user class
+	}
+
+	function publicGetRandomUser() {
+		// If data is missing or bad(?) get random data
+		// For names, age: https://randomuser.me/
+	}
+	
 	return {
-		publicModel: publicModel
+		model: publicModel,
+		getRandomUser: publicGetRandomUser
 	}
 }();
 
 // handleRes module parses the initial data from 23andMe
 APP.handleRes = function() {
 	
-	// TODO: Handle each possible outcome, getting user input
-	function setErrField(rawdata, prop) {
-		var data = rawdata;
+	// TODO: Change prompts to modals with radio buttons for some traits, e.g. ancestry
+	function setErrField(data, prop) {
 		switch (prop) {
 			case 'firstName':
+				data.firstName = prompt('First name?').toLowerCase();
 				break;
 			case 'lastName':
+				data.lastName = prompt('Last name?').toLowerCase();
 				break;
 			case 'ancestry':
+				data.ancestry = [{
+					label: prompt('Background?').toLowerCase(),
+					proportion: 1
+				}];
 				break;
 			case 'genotypes':
+				// Need random data function here
 				break;
 			case 'sex':
-				data['sex'] = {
-					phenotype_id: "sex",
-					value: prompt("Male or female?").toLowerCase()
+				data.sex = {
+					phenotype_id: 'sex',
+					value: prompt('Male or female?').toLowerCase()
 				}
 				break;
 			case 'neanderthal':
+				// Need random data function here
 				break;
 		}
 		return data;
 	}
-	function publicValidate(rawdata) {
-		var data = rawdata;
+
+	function publicValidate(data) {
 		for (var prop in data) {
 			// log( "data." + prop + " = " + data[prop] );
 			try {
@@ -55,6 +73,7 @@ APP.handleRes = function() {
 		}
 		return data;
 	}
+
 	return {
 		validate: publicValidate
 	}

@@ -77,6 +77,7 @@ $traits = array(
 	"genotypes" => $decodeRes3["genotypes"],
 	"sex" => $decodeRes4,
 	"neanderthal" => $decodeRes5["neanderthal"]
+	// also need to get age
 );
 
 header('Content-Type: application/json');
