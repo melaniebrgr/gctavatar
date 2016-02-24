@@ -6,28 +6,32 @@ function log(m) {
 // App logic
 var APP = APP || {};
 
+// APP.model = function() {
+// 	return {}
+// }();
+
 // handleRes module parses the initial data from 23andMe
 APP.handleRes = function() {
+	// TODO: Handle each possible outcome
 	function setErrField(prop) {
-		// TODO: Handle each possible outcome
 		switch (prop) {
 			case 'firstName':
-				// break;
+				break;
 			case 'lastName':
-				// break;
+				break;
 			case 'ancestry':
-				// break;
+				break;
 			case 'genotypes':
-				// break;
+				break;
 			case 'sex':
-				// break;
+
+				break;
 			case 'neanderthal':
-				// break;
+				break;
 			default:
-				var value = prompt(`No data available for ${prop}. Please provide a value:`);
+				log( "TODO: Handle data field errors" );
 		}
 	}
-
 	function publicCheck(data) {
 		for (var prop in data) {
 			// log( "data." + prop + " = " + data[prop] );
@@ -42,7 +46,6 @@ APP.handleRes = function() {
 			}
 		}
 	}
-
 	return {
 		check: publicCheck
 	}
@@ -64,5 +67,4 @@ if ( Cookies.get('access_token') ) {
 		APP.handleRes.check(data);
 	});
 }
-
 });
