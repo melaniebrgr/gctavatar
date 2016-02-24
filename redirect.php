@@ -39,6 +39,8 @@ $secure = false;
 $httponly = false;
 setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 
+// If access token then set header location to index, else "There was a problem with your request"
+// ? > There was ... <a href="/">try again <?php
 // Redirect to index.html
 header("Location: http://localhost:8888/index.html");
 ?>
