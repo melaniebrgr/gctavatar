@@ -6,14 +6,19 @@ function log(m) {
 // App logic
 var APP = APP || {};
 
-// APP.model = function() {
-// 	return {}
-// }();
+APP.model = function(data) {
+	var publicModel = data;
+	return {
+		publicModel: publicModel
+	}
+}();
 
 // handleRes module parses the initial data from 23andMe
 APP.handleRes = function() {
-	// TODO: Handle each possible outcome
-	function setErrField(prop) {
+	
+	// TODO: Handle each possible outcome, getting user input
+	function setErrField(rawdata, prop) {
+		var data = rawdata;
 		switch (prop) {
 			case 'firstName':
 				break;
@@ -24,15 +29,18 @@ APP.handleRes = function() {
 			case 'genotypes':
 				break;
 			case 'sex':
-
+				data['sex'] = {
+					phenotype_id: "sex",
+					value: prompt("Male or female?").toLowerCase()
+				}
 				break;
 			case 'neanderthal':
 				break;
-			default:
-				log( "TODO: Handle data field errors" );
 		}
+		return data;
 	}
-	function publicCheck(data) {
+	function publicValidate(rawdata) {
+		var data = rawdata;
 		for (var prop in data) {
 			// log( "data." + prop + " = " + data[prop] );
 			try {
@@ -42,12 +50,13 @@ APP.handleRes = function() {
 			} 
 			catch (error) {
 				console.error(error);
-				setErrField(prop);
+				data = setErrField(data, prop);
 			}
 		}
+		return data;
 	}
 	return {
-		check: publicCheck
+		validate: publicValidate
 	}
 }();
 
@@ -63,8 +72,7 @@ if ( Cookies.get('access_token') ) {
 	//display loader div
 	$.get( '/results.php', function(data) {
 		//hide loader here
-		console.log(data);
-		APP.handleRes.check(data);
+		log(APP.handleRes.validate(data));
 	});
 }
 });
