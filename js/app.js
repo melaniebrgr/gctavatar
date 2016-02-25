@@ -17,7 +17,7 @@ APP.model = function(data) {
 		// If data is missing or bad(?) get random data
 		// For names, age: https://randomuser.me/
 	}
-	
+
 	return {
 		model: publicModel,
 		getRandomUser: publicGetRandomUser
@@ -79,18 +79,25 @@ APP.handleRes = function() {
 	}
 }();
 
-// Run on document ready
+
 $(function() {
+
+// Set button as link to 23andMe authorization
 $('.getAuth').click(function() {
 	window.location.href = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry rs12913832 rs2153271 rs7349332 rs10034228 rs3827760 rs12896399 rs1667394 rs12821256 rs1805007 rs1805008 i3002507';
 });
 
-// If access_token is available in the cookie skip authorization
+// Toggle spinner on AJAX request
+$(document).ajaxStart(function () {
+	$(".text").append("<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">");
+}).ajaxStop(function () {
+	$(".text .loading-spinner").remove();
+});
+
+// If access_token is available, skip authorization and get data
 if ( Cookies.get('access_token') ) {
 	$('.getAuth').remove();
-	//display loader div
 	$.get( '/results.php', function(data) {
-		//hide loader here
 		log(APP.handleRes.validate(data));
 	});
 }
