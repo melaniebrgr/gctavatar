@@ -3,9 +3,14 @@ function log(m) {
 	console.log(m);
 }
 
-// App logic
 var APP = APP || {};
 
+// Animation logic here
+APP.anim = function() {
+	// Animate!
+}();
+
+// Build the user model that will be reference by the animation, html template
 APP.model = function() {
 	var modelStart;
 
