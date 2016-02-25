@@ -6,27 +6,31 @@ function log(m) {
 // App logic
 var APP = APP || {};
 
-APP.model = function(data) {
-	var publicModel = data;
+APP.model = function() {
+	var modelStart;
 
-	var User = function() {
-		// Create user class
+	function publicSet(data) {
+		modelStart = data;
 	}
-
-	function publicGetRandomUser() {
-		// If data is missing or bad(?) get random data
-		// For names, age: https://randomuser.me/
+	function publicGet() {
+		return modelStart;
 	}
 
 	return {
-		model: publicModel,
-		getRandomUser: publicGetRandomUser
+		set: publicSet,
+		get: publicGet
 	}
 }();
 
-// handleRes module parses the initial data from 23andMe
-APP.handleRes = function() {
+// res module parses the response from 23andMe
+APP.res = function() {
 	
+	function publicGetRandomUser() {
+		// If data is missing or bad(?) get random data
+		// For names, age: https://randomuser.me/
+	}	
+
+
 	// TODO: Change prompts to modals with radio buttons for some traits, e.g. ancestry
 	function setErrField(data, prop) {
 		switch (prop) {
@@ -58,7 +62,7 @@ APP.handleRes = function() {
 		return data;
 	}
 
-	function publicValidate(data) {
+	function publicErrCheck(data) {
 		for (var prop in data) {
 			// log( "data." + prop + " = " + data[prop] );
 			try {
@@ -75,7 +79,7 @@ APP.handleRes = function() {
 	}
 
 	return {
-		validate: publicValidate
+		errCheck: publicErrCheck
 	}
 }();
 
@@ -89,16 +93,17 @@ $('.getAuth').click(function() {
 
 // Toggle spinner on AJAX request
 $(document).ajaxStart(function () {
-	$(".text").append("<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">");
+	$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
 }).ajaxStop(function () {
-	$(".text .loading-spinner").remove();
+	$('.text .loading-spinner').remove();
 });
 
 // If access_token is available, skip authorization and get data
 if ( Cookies.get('access_token') ) {
 	$('.getAuth').remove();
 	$.get( '/results.php', function(data) {
-		log(APP.handleRes.validate(data));
+		APP.model.set( APP.res.errCheck(data) );
+		log(APP.model.get());
 	});
 }
 });
