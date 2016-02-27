@@ -14,6 +14,15 @@ APP.anim = function() {
 APP.model = function() {
 	var modelStart;
 
+	// var User = class {
+	// 	constructor(height, width) {
+	// 		this.name = {
+	// 			first: firstName,
+	// 			last: lastName
+	// 		}
+	// 	}
+	// };
+
 	function publicSet(data) {
 		modelStart = data;
 	}
@@ -29,14 +38,53 @@ APP.model = function() {
 
 // res module parses the response from 23andMe
 APP.res = function() {
+	function randomUser() {
+		var ranUser;
+		$.ajax({
+			url: 'https://randomuser.me/api/',
+			dataType: 'json',
+			async: false
+		})
+		.done( function(data) {
+			ranUser = data;
+		})
+		return ranUser;
+	}
+	log(randomUser())
 	
-	function publicGetRandomUser() {
+	function publicGetRandomData() {
 		// If data is missing or bad(?) get random data
 		// For names, age: https://randomuser.me/
-	}	
+		// This function runs after setErrField
+		// If a trait or value is missing or inappropriate it will be set to a random value
+		var ranUser = randomUser();
+
+		function publicFirstName() {
+			return ranUser.results[0].user.name.first;
+		}
+		function publicLastName() {
+			return ranUser.results[0].user.name.last;
+		}
+		// function publicAncestry() {
+		// 	var ranProportion;
+		// 	return [
+		// 		{ label: "Sub-Saharan African", proportion: ranProportion },
+		// 		{ label: "European", proportion: ranProportion, sub_populations: [
+					
+		// 			] },
+		// 	]
+		// }
+
+		return {
+			firstName: publicFirstName,
+			lastName: publicLastName,
+			// ancestry: publicAncestry
+		}
+	}
+	log(publicGetRandomData());
 
 
-	// TODO: Change prompts to modals with radio buttons for some traits, e.g. ancestry
+	// For traits with error, obtain user input where possible
 	function setErrField(data, prop) {
 		switch (prop) {
 			case 'firstName':
@@ -52,7 +100,7 @@ APP.res = function() {
 				}];
 				break;
 			case 'genotypes':
-				// Need random data function here
+				data.genotypes = [];
 				break;
 			case 'sex':
 				data.sex = {
@@ -61,7 +109,7 @@ APP.res = function() {
 				}
 				break;
 			case 'neanderthal':
-				// Need random data function here
+				data.neanderthal = {}
 				break;
 		}
 		return data;
@@ -69,9 +117,8 @@ APP.res = function() {
 
 	function publicErrCheck(data) {
 		for (var prop in data) {
-			// log( "data." + prop + " = " + data[prop] );
 			try {
-				if (data[prop].error) {
+				if (data[prop] === null || data[prop].error) {
 					throw new Error( `no data available for ${prop}`);
 				}
 			} 

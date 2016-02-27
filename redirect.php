@@ -1,11 +1,13 @@
 <?php
 //CALLBACK URI FROM 23ANDME DURING OAUTH
 $code = $_GET['code'];
+define('CLIENT_ID', '4fb9c5d63e52a08920c3c0c49183901f');
+define('CLIENT_SECRET', '122f530d3904f0781b8f637d8aeefa3c');
 
 // Post these fields to 23andMe.
 $post_field_array = array(
-  'client_id' => '4fb9c5d63e52a08920c3c0c49183901f',
-  'client_secret' => '122f530d3904f0781b8f637d8aeefa3c',
+  'client_id' => CLIENT_ID,
+  'client_secret' => CLIENT_SECRET,
   'grant_type'    => 'authorization_code',
   'code'          => $code,
   'redirect_uri'  => 'http://localhost:8888/redirect.php',
