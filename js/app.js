@@ -139,7 +139,8 @@ APP.res = function() {
 			return ancestry;
 		}
 
-		function publicGenotype() {
+		function publicGenotypes() {
+			var genotypes = [];
 			// Gene factory
 			function createGene(call, location) {
 				var gene = new Object();
@@ -147,13 +148,18 @@ APP.res = function() {
 				gene.location = location;
 				return gene;
 			}
+			APP.init.geneScope.forEach(function(el) {
+				genotypes.push(createGene('AA', el));
+			});
+			return genotypes;
 		}
 
 		return {
 			firstName: publicFirstName,
 			lastName: publicLastName,
 			gender: publicGender,
-			ancestry: publicAncestry
+			ancestry: publicAncestry,
+			genotypes: publicGenotypes
 		}
 	}
 
@@ -171,7 +177,7 @@ APP.res = function() {
 				data.ancestry = publicGetRandomData().ancestry(); 
 				break;
 			case 'genotypes':
-				data.genotypes = [];
+				data.genotypes = publicGetRandomData().genotype();
 				break;
 			case 'sex':
 				data.sex = {
@@ -224,7 +230,7 @@ APP.init = function() {
 	
 	function publicHandle23andMeConnect() {
 		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
-		publicGeneScope.forEach(function(el, i) {
+		publicGeneScope.forEach(function(el) {
 			link += ` ${el}`;
 		});
 		$('.getAuth').click(function() {
@@ -239,7 +245,8 @@ APP.init = function() {
 		})
 		.done( function(data) {
 			APP.ranUser = data;
-			console.log(APP.ranUser)
+			console.log(APP.ranUser);
+			console.log(APP.res.getRandomData().genotypes());
 			// If access_token is available, remove access button and skip authorization
 			if ( Cookies.get('access_token') && !APP.model.get() ) {
 				// Remove button to access 23andMe
