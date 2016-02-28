@@ -138,6 +138,17 @@ APP.res = function() {
 			assignProportion(ancestry);
 			return ancestry;
 		}
+
+		function publicGenotype() {
+			// Gene factory
+			function createGene(call, location) {
+				var gene = new Object();
+				gene.call = call;
+				gene.location = location;
+				return gene;
+			}
+		}
+
 		return {
 			firstName: publicFirstName,
 			lastName: publicLastName,
@@ -196,39 +207,68 @@ APP.res = function() {
 	}
 }();
 
-APP.getData = function getData() {
-	$.ajax({
-		url: 'https://randomuser.me/api/',
-		dataType: 'json'
-	})
-	.done( function(data) {
-		APP.ranUser = data;
-		console.log(APP.ranUser)
-		// If access_token is available, remove access button and skip authorization
-		if ( Cookies.get('access_token') && !APP.model.get() ) {
-			// Remove button to access 23andMe
-			$('.getAuth').remove();
-			// Load spinner
-			$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
-			// Get genetic data from 23andMe
-			$.get( '/results.php', function(data) {
-				// Check the data for errors, then set to the model data
-				APP.model.set( APP.res.errCheck(data) );
-				console.log(APP.model.get());
-				// Remove spinner
-				$('.text .loading-spinner').remove();
-			});
-		}
-	});
-}
+APP.init = function() {
+	var publicGeneScope = [
+		'rs12913832', 
+		'rs2153271', 
+		'rs7349332', 
+		'rs10034228', 
+		'rs3827760', 
+		'rs12896399', 
+		'rs1667394', 
+		'rs12821256', 
+		'rs1805007', 
+		'rs1805008', 
+		'i3002507'
+	];
+	
+	function publicHandle23andMeConnect() {
+		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
+		publicGeneScope.forEach(function(el, i) {
+			link += ` ${el}`;
+		});
+		$('.getAuth').click(function() {
+			window.location.href = link;
+		});
+	}
+
+	function publicGetData() {
+		$.ajax({
+			url: 'https://randomuser.me/api/',
+			dataType: 'json'
+		})
+		.done( function(data) {
+			APP.ranUser = data;
+			console.log(APP.ranUser)
+			// If access_token is available, remove access button and skip authorization
+			if ( Cookies.get('access_token') && !APP.model.get() ) {
+				// Remove button to access 23andMe
+				$('.getAuth').remove();
+				// Load spinner
+				$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
+				// Get genetic data from 23andMe
+				$.get( '/results.php', function(data) {
+					// Check the data for errors, then set to the model data
+					APP.model.set( APP.res.errCheck(data) );
+					console.log(APP.model.get());
+					// Remove spinner
+					$('.text .loading-spinner').remove();
+				});
+			}
+		});
+	}
+
+	return {
+		geneScope: publicGeneScope,
+		handle23andMeConnect: publicHandle23andMeConnect,
+		getData: publicGetData
+	}
+}();
 
 // On document ready
 $(function() {
 	// Set button as link to 23andMe authorization
-	$('.getAuth').click(function() {
-		window.location.href = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry rs12913832 rs2153271 rs7349332 rs10034228 rs3827760 rs12896399 rs1667394 rs12821256 rs1805007 rs1805008 i3002507';
-	});
-
+	APP.init.handle23andMeConnect();
 	// get randomData then get 23andMe data in callback
-	APP.getData();
+	APP.init.getData();
 });
