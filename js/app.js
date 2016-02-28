@@ -112,7 +112,7 @@ APP.res = function() {
 					return +(ranNum * (1 + Math.random())).toFixed(4);
 				}
 				ranNum *= Math.random();
-				if (ranNum < 0.05) {
+				if (ranNum < 0.005) {
 					return 0;
 				}
 				return +ranNum.toFixed(4);
@@ -123,9 +123,6 @@ APP.res = function() {
 				var proportionStart = initNum || 1;
 				for (var i = 0; i < arr.length; i++) {
 					var randomProportion = ranNum(proportionStart, arr[i].label);
-					console.log(arr[i].label);
-					console.log(getLabel());
-					console.log(randomProportion);
 					arr[i].proportion = randomProportion;
 					if (arr[i].sub_populations) assignProportion(arr[i].sub_populations, randomProportion);
 					proportionStart -= randomProportion;
