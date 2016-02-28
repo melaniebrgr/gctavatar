@@ -26,22 +26,23 @@ APP.model = function() {
 
 // res module parses the response from 23andMe
 APP.res = function() {
-	function publicGetRandomData() {
-		// If data is missing or bad(?) get random data
-		// For names, age: https://randomuser.me/
-		// This function runs after setErrField
-		// If a trait or value is missing or inappropriate it will be set to a random value
 
+	// If data is missing get random data from https://randomuser.me/
+	function publicGetRandomData() {
 		function publicFirstName() {
 			return APP.ranUser.results[0].user.name.first || "Jane";
 		}
+
 		function publicLastName() {
 			return APP.ranUser.results[0].user.name.last || "Doe";
 		}
+
 		function publicGender() {
 			return APP.ranUser.results[0].user.gender || "female";
 		}
+
 		function publicAncestry() {
+			// 23andMe ancestry array structure:
 			var ancestry = [
 				{ label: "Sub-Saharan African", proportion: 0 },
 				{ label: "European", proportion: 0, unassigned: 0, sub_populations:
@@ -69,8 +70,9 @@ APP.res = function() {
 					{ label: "Middle Eastern", proportion: 0 }
 				]}
 			];
-			var ranLabel = getLabel();
 
+			// get ranUser probable ancestry given nationality
+			var ranLabel = getLabel();
 			function getLabel() {
 				switch (APP.ranUser.nationality) {
 					case 'AU':
@@ -106,6 +108,10 @@ APP.res = function() {
 				}
 			}
 
+			// Generate a random number
+			// If the population label matches the random user label, 
+			// increase the proportion by a random coefficient
+			// else, if the proportion falls below a certain threshold, set it to 0
 			function ranNum(max, label) {
 				var ranNum = Math.random() * max;
 				if ( label === ranLabel ) {
@@ -118,7 +124,8 @@ APP.res = function() {
 				return +ranNum.toFixed(4);
 			}
 
-			// Recursively loop through nested sub_population arrays, setting as a proportion of its parent population
+			// Recursively loop through nested sub_population arrays, 
+			// setting proportion as a fraction of the parent population proportion
 			function assignProportion(arr, initNum) {
 				var proportionStart = initNum || 1;
 				for (var i = 0; i < arr.length; i++) {
@@ -197,8 +204,6 @@ APP.getData = function getData() {
 	.done( function(data) {
 		APP.ranUser = data;
 		console.log(APP.ranUser)
-		console.log(APP.res.getRandomData().ancestry());
-
 		// If access_token is available, remove access button and skip authorization
 		if ( Cookies.get('access_token') && !APP.model.get() ) {
 			// Remove button to access 23andMe
@@ -209,7 +214,7 @@ APP.getData = function getData() {
 			$.get( '/results.php', function(data) {
 				// Check the data for errors, then set to the model data
 				APP.model.set( APP.res.errCheck(data) );
-				// console.log(APP.model.get());
+				console.log(APP.model.get());
 				// Remove spinner
 				$('.text .loading-spinner').remove();
 			});
