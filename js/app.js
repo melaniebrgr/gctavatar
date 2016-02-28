@@ -140,16 +140,52 @@ APP.res = function() {
 		}
 
 		function publicGenotypes() {
+			// This array will hold the bases for the locations defined in the 23andMe scope
 			var genotypes = [];
-			// Gene factory
+			// Base object factory
 			function createGene(call, location) {
-				var gene = new Object();
+				var gene = {};
 				gene.call = call;
 				gene.location = location;
 				return gene;
 			}
+			// Location dictionary, to lookup possible base pair values given a lcoation
+			var baseDictionary = {
+				'rs12913832': ['A','G'],
+				'rs2153271': ['C','T'],
+				'rs7349332': ['C','T'],
+				'rs10034228': ['C','T'],
+				'rs3827760': ['A','G'],
+				'rs12896399': ['G','T'],
+				'rs1667394': ['C','T'],
+				'rs12821256': ['T','C'],
+				'rs1805007': ['C','T'],
+				'rs1805008': ['C','T'],
+				'i3002507': ['G','C']
+			};
+			// Returns either 1 or 0
+			function getRanIndex() {
+				return Math.floor(Math.random()*2);
+			}
+			// Returns random base pairs given a location
+			function getRanCall(location) {
+				var genotype = '';
+				var bases;
+				try {
+					bases = baseDictionary[location];
+					if (baseDictionary[location] === undefined) 
+						throw new Error(`Base pairs have not been defined for location: ${location}`);
+				} catch (error) {
+					console.log(error);
+					bases = ['-','-'];
+				}
+				genotype += bases[getRanIndex()];
+				genotype += bases[getRanIndex()];
+				return genotype;
+			}
+			// Return array of randmo base-pairs and the location
 			APP.init.geneScope.forEach(function(el) {
-				genotypes.push(createGene('AA', el));
+				genotypes.push( createGene( getRanCall(el), el));
 			});
 			return genotypes;
 		}
@@ -196,7 +232,7 @@ APP.res = function() {
 		for (var prop in data) {
 			try {
 				if (data[prop] === null || data[prop].error) {
-					throw new Error( `no data available for ${prop}`);
+					throw new Error( `No data available for trait: ${prop}`);
 				}
 			} 
 			catch (error) {
