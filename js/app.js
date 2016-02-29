@@ -11,6 +11,7 @@ APP.model = function() {
 
 	// Create user prototype
 
+
 	function publicSet(data) {
 		modelStart = data;
 	}
@@ -28,17 +29,23 @@ APP.model = function() {
 APP.res = function() {
 
 	// If data is missing get random data from https://randomuser.me/
-	function publicGetRandomData() {
+	function getRandomData() {
+		function capFirstLetter(str) {
+			var word = str.split('');
+			word[0] = word[0].toUpperCase();
+			return word.join('');
+		}
+
 		function publicFirstName() {
-			return APP.ranUser.results[0].user.name.first || "Jane";
+			return capFirstLetter(APP.ranUser.results[0].user.name.first) || "Jane";
 		}
 
 		function publicLastName() {
-			return APP.ranUser.results[0].user.name.last || "Doe";
+			return capFirstLetter(APP.ranUser.results[0].user.name.last) || "Doe";
 		}
 
 		function publicGender() {
-			return APP.ranUser.results[0].user.gender || "female";
+			return { phenotype_id: 'sex', value: APP.ranUser.results[0].user.gender || "female" };
 		}
 
 		function publicAncestry() {
@@ -112,6 +119,8 @@ APP.res = function() {
 			// If the population label matches the random user label, 
 			// increase the proportion by a random coefficient
 			// else, if the proportion falls below a certain threshold, set it to 0
+			// FIX THIS, cant be more than parent
+
 			function ranNum(max, label) {
 				var ranNum = Math.random() * max;
 				if ( label === ranLabel ) {
@@ -191,7 +200,7 @@ APP.res = function() {
 		}
 		function publicNeanderthal() {
 			// Return a random value between 0.005 and 0.05 (normal range is between 0.01 and 0.04)
-			return +(Math.random() * ( 0.050 - 0.010 ) + 0.010).toFixed(3);
+			return { proportion: +(Math.random() * ( 0.050 - 0.010 ) + 0.010).toFixed(3) };
 		}
 
 		return {
@@ -204,32 +213,39 @@ APP.res = function() {
 		}
 	}
 
+	// Random 23andMe user factory
+	function publicGetRandom23andMeUser() {
+		var user = {};
+		var ranData = getRandomData();
+		user.ancestry = ranData.ancestry();
+		user.firstName = ranData.firstName();
+		user.genotypes = ranData.genotypes();
+		user.lastName = ranData.lastName();
+		user.neanderthal = ranData.neanderthal();
+		return user;
+	}
+
 	// For traits with error, set to random variables
 	// eventually would want to prompt user for values, where reasonable
 	function setErrField(data, prop) {
 		switch (prop) {
 			case 'firstName':
-				data.firstName = publicGetRandomData().firstName();
+				data.firstName = getRandomData().firstName();
 				break;
 			case 'lastName':
-				data.lastName = publicGetRandomData().lastName();
+				data.lastName = getRandomData().lastName();
 				break;
 			case 'ancestry':
-				data.ancestry = publicGetRandomData().ancestry(); 
+				data.ancestry = getRandomData().ancestry(); 
 				break;
 			case 'genotypes':
-				data.genotypes = publicGetRandomData().genotype();
+				data.genotypes = getRandomData().genotype();
 				break;
 			case 'sex':
-				data.sex = {
-					phenotype_id: 'sex',
-					value: publicGetRandomData().gender()
-				}
+				data.sex = getRandomData().gender();
 				break;
 			case 'neanderthal':
-				data.neanderthal = {
-					proportion: publicGetRandomData().neanderthal()
-				}
+				data.neanderthal = getRandomData().neanderthal();
 				break;
 		}
 		return data;
@@ -252,7 +268,7 @@ APP.res = function() {
 
 	return {
 		errCheck: publicErrCheck,
-		getRandomData: publicGetRandomData
+		getRandom23andMeUser: publicGetRandom23andMeUser
 	}
 }();
 
@@ -289,7 +305,7 @@ APP.init = function() {
 		.done( function(data) {
 			APP.ranUser = data;
 			console.log(APP.ranUser);
-			console.log(APP.res.getRandomData().neanderthal());
+			console.log(APP.res.getRandom23andMeUser());
 			// If access_token is available, remove access button and skip authorization
 			if ( Cookies.get('access_token') && !APP.model.get() ) {
 				// Remove button to access 23andMe
