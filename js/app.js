@@ -189,13 +189,18 @@ APP.res = function() {
 			});
 			return genotypes;
 		}
+		function publicNeanderthal() {
+			// Return a random value between 0.005 and 0.05 (normal range is between 0.01 and 0.04)
+			return +(Math.random() * ( 0.050 - 0.010 ) + 0.010).toFixed(3);
+		}
 
 		return {
 			firstName: publicFirstName,
 			lastName: publicLastName,
 			gender: publicGender,
 			ancestry: publicAncestry,
-			genotypes: publicGenotypes
+			genotypes: publicGenotypes,
+			neanderthal: publicNeanderthal
 		}
 	}
 
@@ -222,7 +227,9 @@ APP.res = function() {
 				}
 				break;
 			case 'neanderthal':
-				data.neanderthal = {}
+				data.neanderthal = {
+					proportion: publicGetRandomData().neanderthal()
+				}
 				break;
 		}
 		return data;
@@ -282,7 +289,7 @@ APP.init = function() {
 		.done( function(data) {
 			APP.ranUser = data;
 			console.log(APP.ranUser);
-			console.log(APP.res.getRandomData().genotypes());
+			console.log(APP.res.getRandomData().neanderthal());
 			// If access_token is available, remove access button and skip authorization
 			if ( Cookies.get('access_token') && !APP.model.get() ) {
 				// Remove button to access 23andMe
