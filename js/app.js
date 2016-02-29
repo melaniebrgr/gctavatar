@@ -118,17 +118,16 @@ APP.res = function() {
 			// Generate a random number
 			// If the population label matches the random user label, 
 			// increase the proportion by a random coefficient
-			// else, if the proportion falls below a certain threshold, set it to 0
-			// FIX THIS, cant be more than parent
-
+			// if the proportion falls below a certain threshold, set it to 0
 			function ranNum(max, label) {
 				var ranNum = Math.random() * max;
 				if ( label === ranLabel ) {
-					return +(ranNum * (1 + Math.random())).toFixed(4);
+					ranNum = +(ranNum * (1 + Math.random())).toFixed(4);
 				}
-				ranNum *= Math.random();
-				if (ranNum < 0.005) {
-					return 0;
+				if (ranNum > max)
+					ranNum = max;
+				if (ranNum < 0.01) {
+					ranNum = 0;
 				}
 				return +ranNum.toFixed(4);
 			}
