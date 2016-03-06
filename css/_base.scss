@@ -1,6 +1,5 @@
 html {
   box-sizing: border-box;
-  min-height: 100%;
 }
 
 *, *:before, *:after {
@@ -8,57 +7,5 @@ html {
 }
 
 body {
-	background-color: $eggshell;
-	margin: 0 0 em(44px);
-}
-
-main {
-	@include clearfix;
-	@include center;
-	
-	> section {
-		float: left;
-		&.visualization {
-			width: 35%;
-		}
-		&.description {
-			width: 65%;
-		}
-	}
-}
-
-a {
-	text-decoration: none;
-}
-
-h1, h2, h3, p, ul, li {
-	font-family: "Poppins", "sans-serif"
-}
-
-h1 {
-	color: $white;
-	font-size: 1em;
-	font-weight: 300;
-	text-transform: uppercase;
-}
-
-h2 {
-	color: $purple;
-	font-size: em(36px);
-	font-weight: 700;
-	margin: em(12px, 36px) 0;
-}
-
-h3 {
-	color: $purple-med;
-	font-size: em(24px);
-	font-weight: 500;
-}
-
-p {
-	color: $purple-dark;
-	font-size: 1em;
-	font-weight: 300;
-	line-height: 21em/16em;
-	margin: em(8px) 0;
+	background-color: $sky;
 }
