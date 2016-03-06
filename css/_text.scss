@@ -1,0 +1,7 @@
+.text {
+	@extend .text--theme1;
+	@include section(55%, 2);
+}
+.text--theme1 {
+	background-color: rgba($white, 0.9);
+}

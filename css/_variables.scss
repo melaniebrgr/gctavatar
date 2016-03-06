@@ -20,6 +20,12 @@ $aqua: #70b9a0;
 	}
 }
 
+@mixin section($basis, $grow) {
+	flex-basis: $basis;
+	flex-grow: $grow;
+	padding-top: 3.6em;
+}
+
 //functions
 @function em($px, $context: $browser-context) {
 	@if ( unitless($px) ) { $px: $px * 1px; }

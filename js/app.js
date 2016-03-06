@@ -322,16 +322,21 @@ APP.init = function() {
 			}
 		});
 	}
+	function publicSetVisAvatarHeight() {
+		$('.vis__avatar').height( $('.vis__avatar').width() );
+	}
 
 	return {
 		geneScope: publicGeneScope,
 		handle23andMeConnect: publicHandle23andMeConnect,
-		getData: publicGetData
+		getData: publicGetData,
+		setVisAvatarHeight: publicSetVisAvatarHeight
 	}
 }();
 
 // On document ready
 $(function() {
+	APP.init.setVisAvatarHeight();
 	// Set button as link to 23andMe authorization
 	APP.init.handle23andMeConnect();
 	// get randomData then get 23andMe data in callback

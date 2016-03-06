@@ -1,0 +1,12 @@
+.vis {
+	@include section(45%, 1);
+	.vis__avatar {
+		width: 90%;
+		border-radius: 50%;
+		box-shadow:  0 0px 20px 1px darken($sky, 20%);
+		padding: 1em;
+		margin: auto;
+		overflow: hidden;
+		// height set in JS
+	}
+}
