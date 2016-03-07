@@ -1,7 +1,20 @@
 .text {
 	@extend .text--theme1;
-	@include section(55%, 2);
+	@include section(65%, 2);
+	padding: 0 em(28px);
+}
+.text__connect {
+	max-width: 520px;
+	h2 {
+		margin: em(18px, 30px) 0;
+	}
 }
 .text--theme1 {
-	background-color: rgba($white, 0.9);
+	background-color: rgba($white, 0.85);
+	border: 1px solid $white;
+	h2 {
+		color: darken($sky, 20%);
+		// color: $sky;
+		font-size: em(30px);
+	}
 }

@@ -1,12 +1,17 @@
 .vis {
-	@include section(45%, 1);
-	.vis__avatar {
-		width: 90%;
-		border-radius: 50%;
-		box-shadow:  0 0px 20px 1px darken($sky, 20%);
-		padding: 1em;
-		margin: auto;
-		overflow: hidden;
-		// height set in JS
-	}
+	@extend .vis--theme1;
+	@include section(35%, 1);
+}
+.vis__avatar {
+	width: 90%;
+	border: 1px solid lighten($sky, 3%);
+	border-radius: 50%;
+	box-shadow:  0 0px 20px 1px darken($sky, 20%);
+	padding: 1em;
+	margin: auto;
+	overflow: hidden;
+	// height set in JS
+}
+.vis--theme1 {
+	border: 1px solid darken($sky, 10%);
 }

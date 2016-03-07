@@ -1,6 +1,7 @@
 //variables
 $browser-context: 16px;
 
+// $white: #fbf9f4;
 $white: #fff;
 $black: #000;
 $sky: #7edbd4;
@@ -19,11 +20,16 @@ $aqua: #70b9a0;
 		height: 0;
 	}
 }
+@mixin transition($el) {
+	transition: $el 0.18s ease-in-out;
+}
 
 @mixin section($basis, $grow) {
 	flex-basis: $basis;
 	flex-grow: $grow;
-	padding-top: 3.6em;
+	// padding-top: 3.6em;
+	display: flex;
+	align-items: center;
 }
 
 //functions
