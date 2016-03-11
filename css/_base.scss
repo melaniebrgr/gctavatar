@@ -18,10 +18,16 @@ main {
 	flex-flow: row nowrap;
 	align-items: stretch;
 }
+h2 {
+	margin-top: em(14px, 1.1em);
+	margin-bottom: em(14px, 1.1em);
+}
 p {
 	color: lighten($black, 35%);
 	font-size: 1.1em;
 	line-height: 150%;
+	margin-top: em(14px, 1.1em);
+	margin-bottom: em(14px, 1.1em);
 }
 a {
 	@include transition(all);
@@ -29,26 +35,7 @@ a {
 	color: lighten($black, 65%);
 	text-decoration: none;
 	&:hover {
-		border-bottom: 2px dotted $coral;
-		color: $coral
-	}
-}
-button {
-	@extend .button-theme1;
-	margin: 0.4em 0;
-	padding: em(16px, 22px) em(18px, 22px);
-}
-.button-theme1 {
-	@include transition(all);
-	background-color: rgba($coral, 0.82);
-	border: 1px solid darken($coral, 10%);
-	color: rgba($white, 0.9);
-	font-size: em(22px);
-	span {
-		font-weight: 700;
-		font-size: em(26px, 22px);
-	}
-	&:hover {
-		background-color: $coral;
+		border-bottom: 2px dotted $gold;
+		color: $gold;
 	}
 }

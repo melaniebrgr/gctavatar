@@ -2,19 +2,18 @@
 	@extend .text--theme1;
 	@include section(65%, 2);
 	padding: 0 em(28px);
-}
-.text__connect {
-	max-width: 520px;
-	h2 {
-		margin: em(18px, 30px) 0;
+
+	[class^='text__'] {
+		max-width: 520px;
 	}
 }
 .text--theme1 {
 	background-color: rgba($white, 0.85);
-	border: 1px solid $white;
+	border-left: 1px solid $white;
 	h2 {
-		color: darken($sky, 20%);
+		color: darken($sky, 30%);
 		// color: $sky;
+		font-family: 'Cabin Sketch', sans-serif;
 		font-size: em(30px);
 	}
 }

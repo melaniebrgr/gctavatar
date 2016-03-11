@@ -1,0 +1,19 @@
+button {
+	@extend .button-theme1;
+	margin: 0.4em 0;
+	padding: em(16px, 22px) em(18px, 22px);
+}
+.button-theme1 {
+	@include transition(all);
+	background-color: rgba($coral, 0.82);
+	border: 1px solid darken($coral, 10%);
+	color: rgba($white, 0.9);
+	font-size: em(22px);
+	span {
+		font-weight: 700;
+		font-size: em(26px, 22px);
+	}
+	&:hover {
+		background-color: $coral;
+	}
+}

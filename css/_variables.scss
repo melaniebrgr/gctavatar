@@ -38,3 +38,8 @@ $aqua: #70b9a0;
 	@if ( unitless($context) ) { $context: $context * 1px; }
 	@return $px / $context * 1em;
 }
+
+//classes
+.is-hidden {
+	display: none;
+}
