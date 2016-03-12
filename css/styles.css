@@ -411,7 +411,8 @@ button {
   -webkit-transition: all 0.18s ease-in-out;
   transition: all 0.18s ease-in-out;
   background-color: rgba(247, 50, 63, 0.82);
-  border: 1px solid #ed0918;
+  border: 2px solid #ed0918;
+  border-radius: 0.0909090909em;
   color: rgba(255, 255, 255, 0.9);
   font-size: 1.375em; }
   .button-theme1 span, button span {
@@ -482,17 +483,53 @@ header {
   -webkit-align-items: center;
       -ms-flex-align: center;
           align-items: center;
-  padding: 0 1.75em; }
+  padding: 0 2.5em; }
   .text [class^='text__'] {
-    max-width: 520px; }
+    max-width: 580px; }
 
 .text--theme1, .text {
-  background-color: rgba(255, 255, 255, 0.85);
-  border-left: 1px solid #fff; }
+  background-color: rgba(255, 255, 255, 0.55);
+  border-left: 1px solid rgba(255, 255, 255, 0.25); }
   .text--theme1 h2, .text h2 {
     color: #2a968e;
     font-family: 'Cabin Sketch', sans-serif;
     font-size: 1.875em; }
+
+.text__results {
+  width: 100%; }
+  .text__results table {
+    margin: 0.9333333333em 0;
+    width: 100%; }
+    .text__results table thead {
+      text-align: left; }
+      .text__results table thead tr th {
+        padding: 1em 0; }
+    .text__results table tbody td {
+      padding: 0.45em 0; }
+    .text__results table tbody td + td {
+      width: 100%; }
+    .text__results table tbody tr:first-child {
+      padding-top: 1.2em; }
+    .text__results table tbody tr:last-child {
+      padding-bottom: 1.2em; }
+    .text__results table tbody tr td {
+      padding-left: 1.2em; }
+
+.text__results--theme1, .text__results {
+  color: #737373; }
+  .text__results--theme1 table, .text__results table {
+    font-size: 0.9375em; }
+    .text__results--theme1 table thead, .text__results table thead {
+      text-align: left; }
+      .text__results--theme1 table thead tr th, .text__results table thead tr th {
+        font-weight: 400; }
+    .text__results--theme1 table tbody td + td, .text__results table tbody td + td {
+      font-size: 1.5em;
+      color: #404040; }
+    .text__results--theme1 table tbody tr:first-child, .text__results table tbody tr:first-child {
+      border-top: 2px solid #7edbd4; }
+    .text__results--theme1 table tbody tr:last-child, .text__results table tbody tr:last-child {
+      border-bottom: 2px solid #7edbd4; }
 
 .footer {
   padding: 0.8em 0;
@@ -502,6 +539,8 @@ header {
     margin: auto; }
 
 .footer--theme1, .footer {
-  background-color: rgba(233, 190, 51, 0.8);
-  border-top: 1px solid #e9be33;
+  background-color: #e9be33;
+  border-top: 1px solid #f0d478;
+  box-shadow: 0 2px 11px #a48212;
+  color: #a48212;
   font: 400 0.75em "Cabin", sans-serif; }

@@ -1,15 +1,15 @@
 .text {
 	@extend .text--theme1;
 	@include section(65%, 2);
-	padding: 0 em(28px);
+	padding: 0 em(40px);
 
 	[class^='text__'] {
-		max-width: 520px;
+		max-width: 580px;
 	}
 }
 .text--theme1 {
-	background-color: rgba($white, 0.85);
-	border-left: 1px solid $white;
+	background-color: rgba($white, 0.55);
+	border-left: 1px solid transparentize($white, 0.75);
 	h2 {
 		color: darken($sky, 30%);
 		// color: $sky;

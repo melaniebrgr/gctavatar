@@ -271,6 +271,7 @@ APP.res = function() {
 	}
 }();
 
+// init module initializes the app, e.g. performs the AJAX request, attaches event handlers
 APP.init = function() {
 	var publicGeneScope = [
 		'rs12913832', 
@@ -285,16 +286,6 @@ APP.init = function() {
 		'rs1805008', 
 		'i3002507'
 	];
-	
-	function publicHandle23andMeConnect() {
-		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
-		publicGeneScope.forEach(function(el) {
-			link += ` ${el}`;
-		});
-		$('.getAuth').click(function() {
-			window.location.href = link;
-		});
-	}
 
 	function publicGetData() {
 		$.ajax({
@@ -322,23 +313,51 @@ APP.init = function() {
 			}
 		});
 	}
-	function publicSetVisAvatarHeight() {
+	
+	// Set button as link to 23andMe authorization
+	function handle23andMeConnect() {
+		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
+		publicGeneScope.forEach(function(el) {
+			link += ` ${el}`;
+		});
+		$('.getAuth').click(function() {
+			window.location.href = link;
+		});
+	}
+
+	// Set height of avatar image to match width
+	function setVisAvatarHeight() {
 		$('.vis__avatar').height( $('.vis__avatar').width() );
+	}
+
+	// Create dropdown manu based on select element
+	function createDropdown() {
+		// Create a dropdown HTML element container
+		// Get every select option and append it as a div to the container
+		// Hide the divs in CSS, reveal on hover (or what-have-you)
+		var dropdownMenu = $('<div>', {
+			class: 'dropdown-menu',
+			html: '<button></button><ul class="list-items"></ul>'
+		});
+		$('.text__results thead th').append(dropdownMenu);
+	}
+
+	function publicSetUI() {
+		setVisAvatarHeight();
+		handle23andMeConnect();
+		// createDropdown();
 	}
 
 	return {
 		geneScope: publicGeneScope,
-		handle23andMeConnect: publicHandle23andMeConnect,
 		getData: publicGetData,
-		setVisAvatarHeight: publicSetVisAvatarHeight
+		setUI: publicSetUI
 	}
 }();
 
 // On document ready
 $(function() {
-	APP.init.setVisAvatarHeight();
-	// Set button as link to 23andMe authorization
-	APP.init.handle23andMeConnect();
+	APP.init.setUI();
 	// get randomData then get 23andMe data in callback
 	APP.init.getData();
 });

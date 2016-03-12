@@ -8,7 +8,9 @@
 	}
 }
 .footer--theme1 {
-	background-color: rgba($gold, 0.8);
-	border-top: 1px solid $gold;
+	background-color: rgba($gold, 1);
+	border-top: 1px solid lighten($gold, 15%);
+	box-shadow: 0 2px 11px darken($gold, 20%);
+	color: darken($gold, 20%);
 	font: 400 em(12px) 'Cabin', sans-serif;
 }

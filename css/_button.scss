@@ -6,9 +6,11 @@ button {
 .button-theme1 {
 	@include transition(all);
 	background-color: rgba($coral, 0.82);
-	border: 1px solid darken($coral, 10%);
+	border: 2px solid darken($coral, 10%);
+	border-radius: em(2, 22);
 	color: rgba($white, 0.9);
 	font-size: em(22px);
+	// box-shadow: 0 3px 0px $coral;
 	span {
 		font-weight: 700;
 		font-size: em(26px, 22px);
