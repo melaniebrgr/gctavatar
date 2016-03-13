@@ -74,6 +74,15 @@ APP.model = function() {
 				return 'wears glasses';		
 		}
 	}
+	function getNeanderthal(p) {
+		if (p < 0.015) {
+			return 'low';
+		} else if (p >= 0.015 && p < 0.035) {
+			return 'normal';
+		} else {
+			return 'high';
+		}
+	}
 
 	// Create user prototype
 	function publicCreateUserModel(data) {
@@ -84,6 +93,7 @@ APP.model = function() {
 		user.freckles = getFreckles(data.genotypes[1].call);
 		user.haircurliness = getHairCurl(data.genotypes[2].call);
 		user.eyesight = getGlasses(data.genotypes[3].call);
+		user.neanderthal = getNeanderthal(data.neanderthal.proportion);
 
 		return user;
 	}
