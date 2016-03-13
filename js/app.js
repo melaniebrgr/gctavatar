@@ -13,7 +13,15 @@ APP.model = function() {
 		//determine if bases are AA, AG, or GG
 		//given bases, set blue, green, and brown eye colour percentages
 		//pass to function that returns predicted colour
-		
+		switch (b) {
+			case 'AA':
+				return probEyeColor(1, 14, 85);
+			case 'AG':
+			case 'GA':
+				return probEyeColor(7, 37, 56);
+			case 'GG':
+				return probEyeColor(1, 27, 72);
+		}
 		function probEyeColor(pBlue, pGreen, pBrown) {
 			//get a random number between 0 + 100
 			//check if number is in range of 0 - pBlue, pBlue - pGreen, pGreen - pBrown
@@ -29,14 +37,16 @@ APP.model = function() {
 				return 'brown';
 			}
 		}
+	}
+	function getHairCurl(b) {
 		switch (b) {
-			case 'AA':
-				return probEyeColor(1, 14, 85);
-			case 'AG':
-			case 'GA':
-				return probEyeColor(7, 37, 56);
-			case 'GG':
-				return probEyeColor(1, 27, 72);
+			case 'TT':
+				return 'curly';
+			case 'TC':
+			case 'CT':
+				return 'wavy';
+			case 'CC':
+				return 'straight';
 		}
 	}
 
@@ -46,6 +56,7 @@ APP.model = function() {
 
 		user.fullname = `${data.firstName} ${data.lastName}`;
 		user.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
+		user.haircurliness = getHairCurl(data.genotypes[2].call);
 
 		return user;
 	}

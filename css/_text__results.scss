@@ -45,10 +45,10 @@
 				color: lighten($black, 25%);
 			}
 			tr:first-child {
-				border-top: 2px solid $sky;
+				border-top: 3px solid $sky;
 			}
 			tr:last-child {
-				border-bottom: 2px solid $sky;
+				border-bottom: 3px solid $sky;
 			}
 		}
 	}	
