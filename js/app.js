@@ -7,21 +7,60 @@ APP.anim = function() {
 
 // Build the user model that will be reference by the animation, html template
 APP.model = function() {
-	var modelStart = null;
+	var modelData = null;
+
+	function getEyeColor(b) {
+		//determine if bases are AA, AG, or GG
+		//given bases, set blue, green, and brown eye colour percentages
+		//pass to function that returns predicted colour
+		
+		function probEyeColor(pBlue, pGreen, pBrown) {
+			//get a random number between 0 + 100
+			//check if number is in range of 0 - pBlue, pBlue - pGreen, pGreen - pBrown
+			//return colour number it is in range of
+			var bluex2 = 0 + pBlue,
+				greenx2 = bluex2 + pGreen,
+				ranNum = Math.floor(Math.random() * (100 + 1));
+			if ( ranNum < bluex2 ) {
+				return 'blue';
+			} else if ( ranNum >= bluex2 && ranNum < greenx2 ) {
+				return 'green';
+			} else {
+				return 'brown';
+			}
+		}
+		switch (b) {
+			case 'AA':
+				return probEyeColor(1, 14, 85);
+			case 'AG':
+			case 'GA':
+				return probEyeColor(7, 37, 56);
+			case 'GG':
+				return probEyeColor(1, 27, 72);
+		}
+	}
 
 	// Create user prototype
+	function publicCreateUserModel(data) {
+		var user = {};
 
+		user.fullname = `${data.firstName} ${data.lastName}`;
+		user.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
+
+		return user;
+	}
 
 	function publicSet(data) {
-		modelStart = data;
+		modelData = data;
 	}
 	function publicGet() {
-		return modelStart;
+		return modelData;
 	}
 
 	return {
 		set: publicSet,
-		get: publicGet
+		get: publicGet,
+		createUserModel: publicCreateUserModel
 	}
 }();
 
@@ -217,6 +256,7 @@ APP.res = function() {
 		var user = {};
 		var ranData = getRandomData();
 		user.ancestry = ranData.ancestry();
+		user.sex = ranData.gender();
 		user.firstName = ranData.firstName();
 		user.genotypes = ranData.genotypes();
 		user.lastName = ranData.lastName();
@@ -294,12 +334,10 @@ APP.init = function() {
 		})
 		.done( function(data) {
 			APP.ranUser = data;
-			console.log(APP.ranUser);
-			console.log(APP.res.getRandom23andMeUser());
+			// console.log(APP.ranUser);
+			// console.log(APP.res.getRandom23andMeUser());
 			// If access_token is available, remove access button and skip authorization
 			if ( Cookies.get('access_token') && !APP.model.get() ) {
-				// Remove button to access 23andMe
-				$('.getAuth').remove();
 				// Load spinner
 				$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
 				// Get genetic data from 23andMe
@@ -307,8 +345,11 @@ APP.init = function() {
 					// Check the data for errors, then set to the model data
 					APP.model.set( APP.res.errCheck(data) );
 					console.log(APP.model.get());
+					console.log(APP.model.createUserModel(APP.model.get()));
 					// Remove spinner
 					$('.text .loading-spinner').remove();
+					$('.text__connect').toggle();
+					$('.text__results').toggle();
 				});
 			}
 		});
@@ -334,7 +375,7 @@ APP.init = function() {
 	function createDropdown() {
 		// Create a dropdown HTML element container
 		// Get every select option and append it as a div to the container
-		// Hide the divs in CSS, reveal on hover (or what-have-you)
+		// On list-item click, set button text
 		var dropdownMenu = $('<span>', { 
 			class: 'dropdown-menu',
 		    click: function(){ $(this).find('.list-items').slideToggle(100)}
@@ -382,5 +423,5 @@ APP.init = function() {
 $(function() {
 	APP.init.setUI();
 	// get randomData then get 23andMe data in callback
-	// APP.init.getData();
+	APP.init.getData();
 });

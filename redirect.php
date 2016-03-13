@@ -41,11 +41,4 @@ $secure = false;
 $httponly = false;
 setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 
-// Check if access token available
-if ($access_token) {
-	// Redirect to index.html
-	header("Location: http://localhost:8888/index.html");
-} else {
-	?><p>There was a problem with your request. Please <a href="/index.html">try again</a>.<?php
-}
-?>
+header("Location: http://localhost:8888/index.html");
