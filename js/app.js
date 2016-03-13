@@ -38,6 +38,19 @@ APP.model = function() {
 			}
 		}
 	}
+
+	function getFreckles(b) {
+		switch (b) {
+			case 'TT':
+				return 'many';
+			case 'TC':
+			case 'CT':
+				return 'some';
+			case 'CC':
+				return 'few';
+		}
+	}
+
 	function getHairCurl(b) {
 		switch (b) {
 			case 'TT':
@@ -50,13 +63,27 @@ APP.model = function() {
 		}
 	}
 
+	function getGlasses(b) {
+		switch (b) {
+			case 'TT':
+				return 'does not wear glasses';
+			case 'TC':
+			case 'CT':
+				return 'may wear glasses';
+			case 'CC':
+				return 'wears glasses';		
+		}
+	}
+
 	// Create user prototype
 	function publicCreateUserModel(data) {
 		var user = {};
 
 		user.fullname = `${data.firstName} ${data.lastName}`;
 		user.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
+		user.freckles = getFreckles(data.genotypes[1].call);
 		user.haircurliness = getHairCurl(data.genotypes[2].call);
+		user.eyesight = getGlasses(data.genotypes[3].call);
 
 		return user;
 	}
