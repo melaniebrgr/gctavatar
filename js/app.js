@@ -335,17 +335,40 @@ APP.init = function() {
 		// Create a dropdown HTML element container
 		// Get every select option and append it as a div to the container
 		// Hide the divs in CSS, reveal on hover (or what-have-you)
-		var dropdownMenu = $('<div>', {
+		var dropdownMenu = $('<span>', { 
 			class: 'dropdown-menu',
-			html: '<button></button><ul class="list-items"></ul>'
+		    click: function(){ $(this).find('.list-items').slideToggle(100)}
 		});
-		$('.text__results thead th').append(dropdownMenu);
+		var listItems = $('<ul>', { class: 'list-items' });
+		$('#user-filter > option').each(function(i) {
+			var text = $(this).text();
+			if ( i === 0 ) {
+				dropdownMenu.append(`<button>${text}</button> <span>'s results</span>`);
+			} 
+			var item = $('<li>', {
+				text: text,
+				click: function() {
+					var text = $(this).text();
+					$('.dropdown-menu button').text( text );
+					$('#user-filter > option').each(function() {
+						if ($(this).text() === text ) {
+							$(this).attr('selected', true);
+						} else {
+							$(this).attr('selected', false);
+						}
+					});
+				}
+			});
+			listItems.append(item);
+		});
+		dropdownMenu.append(listItems);
+		$('.text__results thead th').prepend(dropdownMenu);
 	}
 
 	function publicSetUI() {
 		setVisAvatarHeight();
 		handle23andMeConnect();
-		// createDropdown();
+		createDropdown();
 	}
 
 	return {
@@ -359,5 +382,5 @@ APP.init = function() {
 $(function() {
 	APP.init.setUI();
 	// get randomData then get 23andMe data in callback
-	APP.init.getData();
+	// APP.init.getData();
 });

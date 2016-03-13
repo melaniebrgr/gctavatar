@@ -5,7 +5,7 @@ button {
 }
 .button-theme1 {
 	@include transition(all);
-	background-color: rgba($coral, 0.82);
+	background-color: lighten($coral, 5%);
 	border: 2px solid darken($coral, 10%);
 	border-radius: em(2, 22);
 	color: rgba($white, 0.9);
