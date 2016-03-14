@@ -1,5 +1,20 @@
 var APP = APP || {};
 
+//Utility functions
+APP.math = function() {
+	function publicMathRandom(max, min, int) {
+		var max = max || 1;
+		var min = min || 0;
+		if (int) {
+			return Math.floor(Math.random()*(max-min+1)+min);
+		}
+		return Math.random()*(max-min)+min;
+	}
+	return {
+		random: publicMathRandom
+	}
+}();
+
 // Animation logic
 APP.anim = function() {
 	// Animate!
@@ -83,18 +98,89 @@ APP.model = function() {
 			return 'high';
 		}
 	}
+	function getHaircolor(blond1, blond2, blond3, red1, red2, red3) {
+		//Set default hair color to brown
+		//Determine number of variants present that predispose to blond and red hair
+		//Determine percent probablity of blond and red hair based on number of variants
+		//Get random number random number, if <= to percent Blond or percent Red, update hair color
+		//Return haircolor
+
+		var haircolor = 'brown',
+			numBlondVariants = 0,
+			numRedVariants = 0,
+			percentBlond = 0,
+			percentRed = 0;
+
+		function numVariants(b, B) {
+			var re = new RegExp(B,"g");
+			return b.match(re) ? b.match(re).length : 0;
+		}
+
+		numBlondVariants += numVariants(blond1, 'T') + numVariants(blond2, 'T') + numVariants(blond3, 'C');
+		numRedVariants += numVariants(red1, 'T') + numVariants(red2, 'T') + numVariants(red3, 'C');
+
+		switch (numBlondVariants) {
+			case 0:
+				percentBlond = 0.005;
+				break;
+			case 1:
+			case 2:
+				percentBlond = 0.104;
+				break;
+			case 3:
+			case 4:
+				percentBlond = 0.282;
+				break;
+			case 5:
+			case 6:
+				percentBlond = 0.529;
+				break;
+			default:
+				percentBlond = 0.005;
+				break;
+		}
+
+		switch (numRedVariants) {
+			case 0:
+				percentRed = 0.006;
+				break;
+			case 1:
+				percentRed = 0.057;
+				break;
+			case 2:
+				percentRed = 0.726;
+				break;
+			default:
+				percentRed = 0.006;
+				break;
+		}
+
+		if (APP.math.random() < percentBlond) {
+			haircolor = 'blond';
+		}
+		if (APP.math.random() < percentRed) {
+			haircolor = 'red';
+		}
+		return haircolor;
+	}
 
 	// Create user prototype
 	function publicCreateUserModel(data) {
 		var user = {};
-
 		user.fullname = `${data.firstName} ${data.lastName}`;
 		user.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
 		user.freckles = getFreckles(data.genotypes[1].call);
-		user.haircurliness = getHairCurl(data.genotypes[2].call);
+		user.haircurl = getHairCurl(data.genotypes[2].call);
 		user.eyesight = getGlasses(data.genotypes[3].call);
 		user.neanderthal = getNeanderthal(data.neanderthal.proportion);
-
+		user.haircolor = getHaircolor(
+			data.genotypes[5].call,
+			data.genotypes[6].call,
+			data.genotypes[7].call,
+			data.genotypes[8].call,
+			data.genotypes[9].call,
+			data.genotypes[10].call
+		);
 		return user;
 	}
 
