@@ -1,6 +1,6 @@
 var APP = APP || {};
 
-//Utility functions
+// Utility functions
 APP.math = function() {
 	function publicMathRandom(max, min, int) {
 		var max = max || 1;
@@ -18,16 +18,55 @@ APP.math = function() {
 // Animation logic
 APP.anim = function() {
 	// Animate!
+	function getEyeColor(color) {
+		var colorHex = {
+			'blue': '#2d78b6',
+			'green': '#43894c',
+			'brown': '#a47d76'
+		};
+		return colorHex[color];
+	}
+	function getEyeDialatorMuscleColor(color) {
+		var colorHex = {
+			'blue': '#97c1ff',
+			'green': '#d4ffb3',
+			'brown': '#e2db9c'
+		};
+		return colorHex[color];
+	}
+
+	function publicCreateAnimModel(usermodel) {
+		var animodel = {};
+		animodel.eyecolor = getEyeColor(usermodel.eyecolor);
+		animodel.eyedialatormuscle = getEyeDialatorMuscleColor(usermodel.eyecolor);
+		return animodel;
+	}
+
+	function publicRun(animodel) {
+		var irises = $('#radial-gradient-2 stop');
+		var irisesStroke = $('#iris-color-gradient, #iris-color-gradient-2');
+		var irisDialatorMuscle = irises.find('g g g path');
+		
+		TweenMax.to(irises, 0.5, {attr: {'stop-color': animodel.eyecolor}});
+		TweenMax.to(irisesStroke, 0.5, {attr: {stroke: animodel.eyecolor}});
+		TweenMax.to(irisDialatorMuscle, 0.5, {attr: {stroke: animodel.eyedialatormuscle}});
+	}
+
+	return {
+		createAnimModel: publicCreateAnimModel,
+		run: publicRun
+	};
 }();
 
 // Build the user model that will be reference by the animation, html template
 APP.model = function() {
+	// modelData variable will hold the error-checked reponse from 23andMe
 	var modelData = null;
 
 	function getEyeColor(b) {
-		//determine if bases are AA, AG, or GG
-		//given bases, set blue, green, and brown eye colour percentages
-		//pass to function that returns predicted colour
+		// Determine if bases are AA, AG, or GG
+		// Given bases, set blue, green, and brown eye colour percentages
+		// Pass to function that returns predicted colour
 		switch (b) {
 			case 'AA':
 				return probEyeColor(1, 14, 85);
@@ -38,9 +77,9 @@ APP.model = function() {
 				return probEyeColor(1, 27, 72);
 		}
 		function probEyeColor(pBlue, pGreen, pBrown) {
-			//get a random number between 0 + 100
-			//check if number is in range of 0 - pBlue, pBlue - pGreen, pGreen - pBrown
-			//return colour number it is in range of
+			// Get a random number between 0 + 100
+			// Check if number is in range of 0 - pBlue, pBlue - pGreen, pGreen - pBrown
+			// Return colour number it is in range of
 			var bluex2 = 0 + pBlue,
 				greenx2 = bluex2 + pGreen,
 				ranNum = Math.floor(Math.random() * (100 + 1));
@@ -99,11 +138,11 @@ APP.model = function() {
 		}
 	}
 	function getHaircolor(blond1, blond2, blond3, red1, red2, red3) {
-		//Set default hair color to brown
-		//Determine number of variants present that predispose to blond and red hair
-		//Determine percent probablity of blond and red hair based on number of variants
-		//Get random number random number, if <= to percent Blond or percent Red, update hair color
-		//Return haircolor
+		// Set default hair color to brown
+		// Determine number of variants present that predispose to blond and red hair
+		// Determine percent probablity of blond and red hair based on number of variants
+		// Get random number random number, if <= to percent Blond or percent Red, update hair color
+		// Return haircolor
 
 		var haircolor = 'brown',
 			numBlondVariants = 0,
@@ -166,14 +205,14 @@ APP.model = function() {
 
 	// Create user prototype
 	function publicCreateUserModel(data) {
-		var user = {};
-		user.fullname = `${data.firstName} ${data.lastName}`;
-		user.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
-		user.freckles = getFreckles(data.genotypes[1].call);
-		user.haircurl = getHairCurl(data.genotypes[2].call);
-		user.eyesight = getGlasses(data.genotypes[3].call);
-		user.neanderthal = getNeanderthal(data.neanderthal.proportion);
-		user.haircolor = getHaircolor(
+		var usermodel = {};
+		usermodel.fullname = `${data.firstName} ${data.lastName}`;
+		usermodel.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
+		usermodel.freckles = getFreckles(data.genotypes[1].call);
+		usermodel.haircurl = getHairCurl(data.genotypes[2].call);
+		usermodel.eyesight = getGlasses(data.genotypes[3].call);
+		usermodel.neanderthal = getNeanderthal(data.neanderthal.proportion);
+		usermodel.haircolor = getHaircolor(
 			data.genotypes[5].call,
 			data.genotypes[6].call,
 			data.genotypes[7].call,
@@ -181,7 +220,7 @@ APP.model = function() {
 			data.genotypes[9].call,
 			data.genotypes[10].call
 		);
-		return user;
+		return usermodel;
 	}
 
 	function publicSet(data) {
@@ -195,13 +234,13 @@ APP.model = function() {
 		set: publicSet,
 		get: publicGet,
 		createUserModel: publicCreateUserModel
-	}
+	};
 }();
 
 // res module parses the response from 23andMe
 APP.res = function() {
 
-	// If data is missing get random data from https://randomuser.me/
+	// Creates random data based on https://randomuser.me/
 	function getRandomData() {
 		function capFirstLetter(str) {
 			var word = str.split('');
@@ -330,7 +369,8 @@ APP.res = function() {
 				gene.location = location;
 				return gene;
 			}
-			// Location dictionary, to lookup possible base pair values given a lcoation
+			// Location dictionary, to lookup possible base pair values given a location
+			// Cannot change genotype order
 			var baseDictionary = {
 				'rs12913832': ['A','G'],
 				'rs2153271': ['C','T'],
@@ -398,8 +438,7 @@ APP.res = function() {
 		return user;
 	}
 
-	// For traits with error, set to random variables
-	// eventually would want to prompt user for values, where reasonable
+	// For traits with error, set to random variables (eventually would want to prompt user for values)
 	function setErrField(data, prop) {
 		switch (prop) {
 			case 'firstName':
@@ -424,6 +463,7 @@ APP.res = function() {
 		return data;
 	}
 
+	// Check the AJAX response data for errors
 	function publicErrCheck(data) {
 		for (var prop in data) {
 			try {
@@ -442,7 +482,7 @@ APP.res = function() {
 	return {
 		errCheck: publicErrCheck,
 		getRandom23andMeUser: publicGetRandom23andMeUser
-	}
+	};
 }();
 
 // init module initializes the app, e.g. performs the AJAX request, attaches event handlers
@@ -461,6 +501,7 @@ APP.init = function() {
 		'i3002507'
 	];
 
+	//First, get random data from randomuser API
 	function publicGetData() {
 		$.ajax({
 			url: 'https://randomuser.me/api/',
@@ -474,16 +515,19 @@ APP.init = function() {
 			if ( Cookies.get('access_token') && !APP.model.get() ) {
 				// Load spinner
 				$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
-				// Get genetic data from 23andMe
+				// Second, get genetic data from 23andMe
 				$.get( '/results.php', function(data) {
 					// Check the data for errors, then set to the model data
 					APP.model.set( APP.res.errCheck(data) );
 					console.log(APP.model.get());
 					console.log(APP.model.createUserModel(APP.model.get()));
+					console.log(APP.model.createUserModel(APP.res.getRandom23andMeUser()));
+					console.log(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 					// Remove spinner
 					$('.text .loading-spinner').remove();
 					$('.text__connect').toggle();
 					$('.text__results').toggle();
+					APP.anim.run(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 				});
 			}
 		});
@@ -503,6 +547,9 @@ APP.init = function() {
 	// Set height of avatar image to match width
 	function setVisAvatarHeight() {
 		$('.vis__avatar').height( $('.vis__avatar').width() );
+		$( window ).resize(function() { 
+			$('.vis__avatar').height( $('.vis__avatar').width() );
+		}); 
 	}
 
 	// Create dropdown manu based on select element
@@ -550,7 +597,7 @@ APP.init = function() {
 		geneScope: publicGeneScope,
 		getData: publicGetData,
 		setUI: publicSetUI
-	}
+	};
 }();
 
 // On document ready
