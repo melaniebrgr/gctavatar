@@ -42,14 +42,24 @@ APP.anim = function() {
 		};
 		return colorHex[color];
 	}
+	function getFreckles(amount) {
+		var numFrecklePolys = $('#freckles polygon').length;
+		var numFreckles = {
+			many: numFrecklePolys,
+			some: Math.floor(numFrecklePolys/2),
+			few: 3
+		};
+		return numFreckles[amount];
+	}
 
 	// Returns object used to create animation
 	function publicCreateAnimModel(usermodel) {
-		var animodel = {};
-		animodel.eyecolor = getEyeColor(usermodel.eyecolor);
-		animodel.eyedialatormuscle = getEyeDialatorMuscleColor(usermodel.eyecolor);
-		animodel.haircolor = getHairColor(usermodel.haircolor);
-		return animodel;
+		return {
+			eyecolor: getEyeColor(usermodel.eyecolor),
+			eyedialatormuscle: getEyeDialatorMuscleColor(usermodel.eyecolor),
+			haircolor: getHairColor(usermodel.haircolor),
+			freckles: getFreckles(usermodel.freckles)
+		};
 	}
 
 	// Functions to create GSAP animations
@@ -70,7 +80,7 @@ APP.anim = function() {
 		var glasses = $('#glasses');
 		var glassesTl = new TimelineMax();
 		glassesTl
-			.from(glasses, 1.2, {autoAlpha: 0, transformOrigin: 'left top', rotation: -50, y: '-=110px', ease: Elastic.easeOut.config(1.2, 1)});
+			.from(glasses, 1.2, {autoAlpha: 0, transformOrigin: '10% top', rotation: -50, y: '-=110px', ease: Elastic.easeOut.config(1.2, 1)});
 		return glassesTl;
 	}
 	function animHaircolor(animodel) {
@@ -82,13 +92,21 @@ APP.anim = function() {
 			.to(eyebrows, 0.8, {attr: {stroke: animodel.haircolor}}, '-=0.8');
 		return hairClrTl;
 	}
+	function animFreckles(animodel) {
+		var freckles = $('#freckles polygon');
+		var frecklesTl = new TimelineMax();
+			frecklesTl
+				.staggerFrom(freckles, 0.1, {autoAlpha: 0, ease: Back.easeOut.config(2)}, -0.05)
+		return frecklesTl;
+	}
 
 	function publicRun(animodel) {
 		var mainTl = new TimelineMax();
 		mainTl
 			.add(animEyes(animodel))
 			.add(animGlasses(animodel))
-			.add(animHaircolor(animodel));
+			.add(animHaircolor(animodel))
+			.add(animFreckles(animodel));
 	}
 
 	return {
