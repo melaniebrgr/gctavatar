@@ -20,25 +20,25 @@ APP.anim = function() {
 	// Libraries to lookup values for animation
 	function getEyeColor(color) {
 		var colorHex = {
-			'blue': '#2d78b6',
-			'green': '#43894c',
-			'brown': '#a47d76'
+			blue: '#2d78b6',
+			green: '#43894c',
+			brown: '#a47d76'
 		};
 		return colorHex[color];
 	}
 	function getEyeDialatorMuscleColor(color) {
 		var colorHex = {
-			'blue': '#97c1ff',
-			'green': '#d4ffb3',
-			'brown': '#e2db9c'
+			blue: '#97c1ff',
+			green: '#d4ffb3',
+			brown: '#e2db9c'
 		};
 		return colorHex[color];
 	}
 	function getHairColor(color) {
 		var colorHex = {
-			'brown': '#A47D76',
-			'blond': '#F7E1BC',
-			'red': '#C3452C'
+			brown: '#A47D76',
+			blond: '#F7E1BC',
+			red: '#C3452C'
 		};
 		return colorHex[color];
 	}
@@ -75,9 +75,11 @@ APP.anim = function() {
 	}
 	function animHaircolor(animodel) {
 		var hairClr = $('#linear-gradient stop');
+			eyebrows = $('#eyebrow path, #eyebrow-2 path');
 		var hairClrTl = new TimelineMax();
 		hairClrTl
-			.to(hairClr, 0.8, {attr: {'stop-color': animodel.haircolor}});
+			.to(hairClr, 0.8, {attr: {'stop-color': animodel.haircolor}})
+			.to(eyebrows, 0.8, {attr: {stroke: animodel.haircolor}}, '-=0.8');
 		return hairClrTl;
 	}
 
