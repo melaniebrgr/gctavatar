@@ -17,7 +17,7 @@ APP.math = function() {
 
 // Animation logic
 APP.anim = function() {
-	// Animate!
+	// Libraries to lookup values for animation
 	function getEyeColor(color) {
 		var colorHex = {
 			'blue': '#2d78b6',
@@ -34,22 +34,59 @@ APP.anim = function() {
 		};
 		return colorHex[color];
 	}
+	function getHairColor(color) {
+		var colorHex = {
+			'brown': '#A47D76',
+			'blond': '#F7E1BC',
+			'red': '#C3452C'
+		};
+		return colorHex[color];
+	}
 
+	// Returns object used to create animation
 	function publicCreateAnimModel(usermodel) {
 		var animodel = {};
 		animodel.eyecolor = getEyeColor(usermodel.eyecolor);
 		animodel.eyedialatormuscle = getEyeDialatorMuscleColor(usermodel.eyecolor);
+		animodel.haircolor = getHairColor(usermodel.haircolor);
 		return animodel;
 	}
 
+	// Functions to create GSAP animations
+	function animEyes(animodel) {
+		//eyes
+		var irisesFill = $('#radial-gradient-2 stop'),
+			irisesStroke = $('#iris-color-gradient, #iris-color-gradient-2'),
+			irisDialatorMuscle = irisesFill.find('g g g path');
+		var eyeTl = new TimelineMax();
+		eyeTl
+			.add('start')
+			.to(irisesFill, 0.8, {attr: {'stop-color': animodel.eyecolor}}, 'start')
+			.to(irisesStroke, 0.8, {attr: {stroke: animodel.eyecolor}}, 'start')
+			.to(irisDialatorMuscle, 0.8, {attr: {stroke: animodel.eyedialatormuscle}}, 'start');
+		return eyeTl;	
+	}
+	function animGlasses(animodel) {
+		var glasses = $('#glasses');
+		var glassesTl = new TimelineMax();
+		glassesTl
+			.from(glasses, 1.2, {autoAlpha: 0, transformOrigin: 'left top', rotation: -50, y: '-=110px', ease: Elastic.easeOut.config(1.2, 1)});
+		return glassesTl;
+	}
+	function animHaircolor(animodel) {
+		var hairClr = $('#linear-gradient stop');
+		var hairClrTl = new TimelineMax();
+		hairClrTl
+			.to(hairClr, 0.8, {attr: {'stop-color': animodel.haircolor}});
+		return hairClrTl;
+	}
+
 	function publicRun(animodel) {
-		var irises = $('#radial-gradient-2 stop');
-		var irisesStroke = $('#iris-color-gradient, #iris-color-gradient-2');
-		var irisDialatorMuscle = irises.find('g g g path');
-		
-		TweenMax.to(irises, 0.5, {attr: {'stop-color': animodel.eyecolor}});
-		TweenMax.to(irisesStroke, 0.5, {attr: {stroke: animodel.eyecolor}});
-		TweenMax.to(irisDialatorMuscle, 0.5, {attr: {stroke: animodel.eyedialatormuscle}});
+		var mainTl = new TimelineMax();
+		mainTl
+			.add(animEyes(animodel))
+			.add(animGlasses(animodel))
+			.add(animHaircolor(animodel));
 	}
 
 	return {
@@ -220,6 +257,7 @@ APP.model = function() {
 			data.genotypes[9].call,
 			data.genotypes[10].call
 		);
+		console.log(usermodel);
 		return usermodel;
 	}
 
@@ -427,15 +465,15 @@ APP.res = function() {
 
 	// Random 23andMe user factory
 	function publicGetRandom23andMeUser() {
-		var user = {};
 		var ranData = getRandomData();
-		user.ancestry = ranData.ancestry();
-		user.sex = ranData.gender();
-		user.firstName = ranData.firstName();
-		user.genotypes = ranData.genotypes();
-		user.lastName = ranData.lastName();
-		user.neanderthal = ranData.neanderthal();
-		return user;
+		return {
+			ancestry: ranData.ancestry(),
+			sex: ranData.gender(),
+			firstName: ranData.firstName(),
+			genotypes: ranData.genotypes(),
+			lastName: ranData.lastName(),
+			neanderthal: ranData.neanderthal()
+		};
 	}
 
 	// For traits with error, set to random variables (eventually would want to prompt user for values)
@@ -487,6 +525,26 @@ APP.res = function() {
 
 // init module initializes the app, e.g. performs the AJAX request, attaches event handlers
 APP.init = function() {
+
+	// If access_token is available, remove access button and skip authorization
+	function get23andMeData() {
+		if ( Cookies.get('access_token') && !APP.model.get() ) {
+			// Load spinner
+			$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
+			// Second, get genetic data from 23andMe
+			$.get( '/results.php', function(data) {
+				// Check the data for errors, then set to the model data
+				APP.model.set( APP.res.errCheck(data) );
+				console.log(APP.model.get());
+				console.log(APP.model.createUserModel(APP.model.get()));
+				// Remove spinner
+				$('.text .loading-spinner').remove();
+				$('.text__connect').toggle();
+				$('.text__results').toggle();
+			});
+		}
+	}
+
 	var publicGeneScope = [
 		'rs12913832', 
 		'rs2153271', 
@@ -509,27 +567,8 @@ APP.init = function() {
 		})
 		.done( function(data) {
 			APP.ranUser = data;
-			// console.log(APP.ranUser);
-			// console.log(APP.res.getRandom23andMeUser());
-			// If access_token is available, remove access button and skip authorization
-			if ( Cookies.get('access_token') && !APP.model.get() ) {
-				// Load spinner
-				$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
-				// Second, get genetic data from 23andMe
-				$.get( '/results.php', function(data) {
-					// Check the data for errors, then set to the model data
-					APP.model.set( APP.res.errCheck(data) );
-					console.log(APP.model.get());
-					console.log(APP.model.createUserModel(APP.model.get()));
-					console.log(APP.model.createUserModel(APP.res.getRandom23andMeUser()));
-					console.log(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
-					// Remove spinner
-					$('.text .loading-spinner').remove();
-					$('.text__connect').toggle();
-					$('.text__results').toggle();
-					APP.anim.run(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
-				});
-			}
+			// get23andMeData();
+			APP.anim.run(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 		});
 	}
 	
