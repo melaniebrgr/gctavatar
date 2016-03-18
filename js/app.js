@@ -34,6 +34,14 @@ APP.anim = function() {
 		};
 		return colorHex[color];
 	}
+	function getGlasses(glasses) {
+		var glassesBool = {
+			'does not wear glasses': false,
+			'may wear glasses': APP.math.random() < 0.5 ? true : false,
+			'wears glasses': true
+		};
+		return glassesBool[glasses];
+	}
 	function getHairColor(color) {
 		var colorHex = {
 			brown: '#A47D76',
@@ -51,6 +59,15 @@ APP.anim = function() {
 		};
 		return numFreckles[amount];
 	}
+	function getNeanderthal(neanderthalness) {
+		var neanderValues = {
+			low: 0.75,
+			normal: 1,
+			high: 1.5
+		};
+		return neanderValues[neanderthalness];
+		// return neanderValues['high'];
+	}
 
 	// Returns object used to create animation
 	function publicCreateAnimModel(usermodel) {
@@ -58,7 +75,9 @@ APP.anim = function() {
 			eyecolor: getEyeColor(usermodel.eyecolor),
 			eyedialatormuscle: getEyeDialatorMuscleColor(usermodel.eyecolor),
 			haircolor: getHairColor(usermodel.haircolor),
-			freckles: getFreckles(usermodel.freckles)
+			freckles: getFreckles(usermodel.freckles),
+			glasses: getGlasses(usermodel.eyesight),
+			neanderthal: getNeanderthal(usermodel.neanderthal)
 		};
 	}
 
@@ -79,9 +98,32 @@ APP.anim = function() {
 	function animGlasses(animodel) {
 		var glasses = $('#glasses');
 		var glassesTl = new TimelineMax();
-		glassesTl
-			.from(glasses, 1.2, {autoAlpha: 0, transformOrigin: '10% top', rotation: -50, y: '-=110px', ease: Elastic.easeOut.config(1.2, 1)});
-		return glassesTl;
+		if (animodel.glasses) {
+		//put glasses on
+			if (glasses.css('visibility') === 'hidden') {
+				glassesTl
+					.fromTo(glasses, 1, {transformOrigin: '10% top', rotation: -50, y: '-=110px', x: '-=10px', ease: Elastic.easeOut.config(1.2, 1)}, {autoAlpha: 1});
+				return glassesTl;
+			} else {
+				glassesTl
+					.to(glasses, 0.2, {y: '+=4px', ease: Circ.easeOut})
+					.to(glasses, 0.75, {y: '-=4px', ease: Elastic.easeOut.config(1, 0.75)});
+				return glassesTl;
+			}
+		}
+		//take glasses off
+		if (glasses.css('visibility') === 'hidden') {
+			glassesTl
+				.fromTo(glasses, 1, {transformOrigin: '10% top', rotation: -50, y: '-=110px', x: '-=10px', ease: Elastic.easeOut.config(1.2, 1)}, {autoAlpha: 1})
+				.to(glasses, 1, {transformOrigin: '90% top', rotation: 50, y: '-=110px', x: '+=10px', ease: Elastic.easeIn.config(1.2, 1), autoAlpha: 0})
+				.set(glasses, {rotation: 0, y: '+=110px', x: '-=10px'});
+			return glassesTl;
+		} else {
+			glassesTl
+				.to(glasses, 1, {autoAlpha: 0, transformOrigin: '90% top', rotation: 50, y: '-=110px', x: '+=10px', ease: Elastic.easeIn.config(1.2, 1)})
+				.set(glasses, {rotation: 0, y: '+=110px', x: '-=10px'});
+			return glassesTl;
+		}
 	}
 	function animHaircolor(animodel) {
 		var hairClr = $('#linear-gradient stop');
@@ -93,11 +135,36 @@ APP.anim = function() {
 		return hairClrTl;
 	}
 	function animFreckles(animodel) {
-		var freckles = $('#freckles polygon');
+		var freckles = $('#freckles polygon'),
+			frecklePortion = freckles.slice(0, animodel.freckles),
+			prevFreckleCount = 0; //keep count of number of freckles showing in the current SVG
+		freckles.each(function() {
+			if ($(this).css('visibility') !== 'hidden') prevFreckleCount++;
+		});
 		var frecklesTl = new TimelineMax();
+		if (frecklePortion.length > prevFreckleCount) { //we want to show more freckles than the current svg has, but only add those is doesn't
+			frecklePortion = frecklePortion.slice(0,prevFreckleCount);
 			frecklesTl
-				.staggerFrom(freckles, 0.1, {autoAlpha: 0, ease: Back.easeOut.config(2)}, -0.05)
-		return frecklesTl;
+				.staggerTo(frecklePortion, 0.1, {autoAlpha: 1, ease: Back.easeOut.config(2)}, -0.05);
+			return frecklesTl;
+		}
+		if (frecklePortion.length < prevFreckleCount) { //there are more freckles showing than we want; we want to hide the extras
+			freckles = freckles.slice(0,frecklePortion.length);
+			frecklesTl
+				.staggerTo(freckles, 0.1, {autoAlpha: 0, ease: Back.easeIn.config(2)}, -0.05);
+			return frecklesTl;
+		}
+		return 'freckle-marker';
+	}
+	function animNeanderthal(animodel) {
+		var eyebrows = $('#eyebrow path, #eyebrow-2 path'),
+			eyebrowsStrokeWidth = parseInt($('#eyebrow path').attr('stroke-width'))*animodel.neanderthal,
+			nose = $('#nose path');
+		var neanderTl = new TimelineMax();
+		neanderTl
+			.to(eyebrows, 0.8, {attr: {'stroke-width': eyebrowsStrokeWidth}})
+			.to(nose, 0.8, {transformOrigin:'right top', scale: animodel.neanderthal});
+		return neanderTl;
 	}
 
 	function publicRun(animodel) {
@@ -106,7 +173,8 @@ APP.anim = function() {
 			.add(animEyes(animodel))
 			.add(animGlasses(animodel))
 			.add(animHaircolor(animodel))
-			.add(animFreckles(animodel));
+			.add(animFreckles(animodel))
+			.add(animNeanderthal(animodel));
 	}
 
 	return {
