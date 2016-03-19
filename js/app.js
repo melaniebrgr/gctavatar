@@ -1,5 +1,28 @@
 var APP = APP || {};
 
+(function(){
+	var html = document.querySelector("svg").parentNode.innerHTML;
+					//$('svg').html()
+	var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+	var canvas = document.querySelector("canvas"),
+	    context = canvas.getContext("2d");
+	    canvas.setAttribute('width', 403);
+	    canvas.setAttribute('height', 403);
+
+	var image = new Image;
+	  image.src = imgsrc;
+	  image.onload = function() {
+	      context.drawImage(image, 0, 0);
+	      var canvasdata = canvas.toDataURL("image/png");
+	      var a = document.createElement("a");
+	      a.textContent = "save";
+	      a.download = "export_"+Date.now()+".png";
+	      a.href = canvasdata;
+	      document.body.appendChild(a);
+	      canvas.parentNode.removeChild(canvas);
+	};
+})();
+
 // Utility functions
 APP.math = function() {
 	function publicMathRandom(max, min, int) {
@@ -96,7 +119,7 @@ APP.anim = function() {
 			.to(irisesFill, 0.8, {attr: {'stop-color': animodel.eyecolor}}, 'start')
 			.to(irisesStroke, 0.8, {attr: {stroke: animodel.eyecolor}}, 'start')
 			.to(irisDialatorMuscle, 0.8, {attr: {stroke: animodel.eyedialatormuscle}}, 'start');
-		return eyeTl;	
+		return eyeTl;
 	}
 	function animGlasses(animodel) {
 		var glasses = $('#glasses');
@@ -253,7 +276,7 @@ APP.model = function() {
 			case 'CT':
 				return 'may wear glasses';
 			case 'CC':
-				return 'wears glasses';		
+				return 'wears glasses';
 		}
 	}
 	function getNeanderthal(p) {
@@ -394,7 +417,7 @@ APP.res = function() {
 			var ancestry = [
 				{ label: "Sub-Saharan African", proportion: 0 },
 				{ label: "European", proportion: 0, unassigned: 0, sub_populations:
-					[{ label: "Northwestern European", proportion: 0, unassigned: 0, sub_populations: 
+					[{ label: "Northwestern European", proportion: 0, unassigned: 0, sub_populations:
 						[{ label: "French and German", proportion: 0 },
 						{ label: "Scandinavian", proportion: 0 },
 						{ label: "Finnish", proportion: 0 },
@@ -408,12 +431,12 @@ APP.res = function() {
 						{ label: "Sardinian", proportion: 0 }]}
 				]},
 				{ label: "Oceanian", proportion: 0 },
-				{ label: "East Asian & Native American", proportion: 0, unassigned: 0, sub_populations: 
+				{ label: "East Asian & Native American", proportion: 0, unassigned: 0, sub_populations:
 					[{ label: "Native American", proportion: 0 },
 					{ label: "East Asian", proportion: 0 }
 				]},
 				{ label: "South Asian", proportion: 0 },
-				{ label: "Middle Eastern & North African", proportion: 0, unassigned: 0, sub_populations: 
+				{ label: "Middle Eastern & North African", proportion: 0, unassigned: 0, sub_populations:
 					[{ label: "North African", proportion: 0 },
 					{ label: "Middle Eastern", proportion: 0 }
 				]}
@@ -437,7 +460,7 @@ APP.res = function() {
 						return 'Iberian';
 					case 'FI':
 						return 'Finnish';
-					case 'FR': 
+					case 'FR':
 						return 'French and German';
 					case 'GB':
 						return 'Northwestern European';
@@ -451,13 +474,13 @@ APP.res = function() {
 						return 'Oceanian';
 					case 'US':
 						return 'European';
-					default: 
+					default:
 						return false;
 				}
 			}
 
 			// Generate a random number
-			// If the population label matches the random user label, 
+			// If the population label matches the random user label,
 			// increase the proportion by a random coefficient
 			// if the proportion falls below a certain threshold, set it to 0
 			function ranNum(max, label) {
@@ -473,7 +496,7 @@ APP.res = function() {
 				return +ranNum.toFixed(4);
 			}
 
-			// Recursively loop through nested sub_population arrays, 
+			// Recursively loop through nested sub_population arrays,
 			// setting proportion as a fraction of the parent population proportion
 			function assignProportion(arr, initNum) {
 				var proportionStart = initNum || 1;
@@ -482,7 +505,7 @@ APP.res = function() {
 					arr[i].proportion = randomProportion;
 					if (arr[i].sub_populations) assignProportion(arr[i].sub_populations, randomProportion);
 					proportionStart -= randomProportion;
-				}		
+				}
 			}
 			assignProportion(ancestry);
 			return ancestry;
@@ -523,7 +546,7 @@ APP.res = function() {
 				var bases;
 				try {
 					bases = baseDictionary[location];
-					if (baseDictionary[location] === undefined) 
+					if (baseDictionary[location] === undefined)
 						throw new Error(`Base pairs have not been defined for location: ${location}`);
 				} catch (error) {
 					console.log(error);
@@ -577,7 +600,7 @@ APP.res = function() {
 				data.lastName = getRandomData().lastName();
 				break;
 			case 'ancestry':
-				data.ancestry = getRandomData().ancestry(); 
+				data.ancestry = getRandomData().ancestry();
 				break;
 			case 'genotypes':
 				data.genotypes = getRandomData().genotype();
@@ -599,7 +622,7 @@ APP.res = function() {
 				if (data[prop] === null || data[prop].error) {
 					throw new Error( `No data available for trait: ${prop}`);
 				}
-			} 
+			}
 			catch (error) {
 				console.error(error);
 				data = setErrField(data, prop);
@@ -637,16 +660,16 @@ APP.init = function() {
 	}
 
 	var publicGeneScope = [
-		'rs12913832', 
-		'rs2153271', 
-		'rs7349332', 
-		'rs10034228', 
-		'rs3827760', 
-		'rs12896399', 
-		'rs1667394', 
-		'rs12821256', 
-		'rs1805007', 
-		'rs1805008', 
+		'rs12913832',
+		'rs2153271',
+		'rs7349332',
+		'rs10034228',
+		'rs3827760',
+		'rs12896399',
+		'rs1667394',
+		'rs12821256',
+		'rs1805007',
+		'rs1805008',
 		'i3002507'
 	];
 
@@ -662,7 +685,7 @@ APP.init = function() {
 			APP.anim.run(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 		});
 	}
-	
+
 	// Set button as link to 23andMe authorization
 	function handle23andMeConnect() {
 		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
@@ -677,9 +700,9 @@ APP.init = function() {
 	// Set height of avatar image to match width
 	function setVisAvatarHeight() {
 		$('.vis__avatar').height( $('.vis__avatar').width() );
-		$( window ).resize(function() { 
+		$( window ).resize(function() {
 			$('.vis__avatar').height( $('.vis__avatar').width() );
-		}); 
+		});
 	}
 
 	// Create dropdown manu based on select element
@@ -687,7 +710,7 @@ APP.init = function() {
 		// Create a dropdown HTML element container
 		// Get every select option and append it as a div to the container
 		// On list-item click, set button text
-		var dropdownMenu = $('<span>', { 
+		var dropdownMenu = $('<span>', {
 			class: 'dropdown-menu',
 		    click: function(){ $(this).find('.list-items').slideToggle(100)}
 		});
@@ -696,7 +719,7 @@ APP.init = function() {
 			var text = $(this).text();
 			if ( i === 0 ) {
 				dropdownMenu.append(`<button>${text}</button> <span>'s results</span>`);
-			} 
+			}
 			var item = $('<li>', {
 				text: text,
 				click: function() {
