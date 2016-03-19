@@ -20,17 +20,17 @@ APP.anim = function() {
 	// Libraries to lookup values for animation
 	function getEyeColor(color) {
 		var colorHex = {
-			blue: '#2d78b6',
-			green: '#43894c',
-			brown: '#a47d76'
+			blue: '#1f74ad',
+			green: '#3a7c41',
+			brown: '#916b66'
 		};
 		return colorHex[color];
 	}
 	function getEyeDialatorMuscleColor(color) {
 		var colorHex = {
-			blue: '#97c1ff',
-			green: '#d4ffb3',
-			brown: '#e2db9c'
+			blue: '#91C2C3',
+			green: '#8CA986',
+			brown: '#D6B08C'
 		};
 		return colorHex[color];
 	}
@@ -44,9 +44,9 @@ APP.anim = function() {
 	}
 	function getHairColor(color) {
 		var colorHex = {
-			brown: '#A47D76',
-			blond: '#F7E1BC',
-			red: '#C3452C'
+			brown: '#916b66',
+			blond: '#ddc29b',
+			red: '#af4938'
 		};
 		return colorHex[color];
 	}
@@ -55,7 +55,7 @@ APP.anim = function() {
 		var numFreckles = {
 			many: numFrecklePolys,
 			some: Math.floor(numFrecklePolys/2),
-			few: 3
+			few: 0
 		};
 		return numFreckles[amount];
 	}
@@ -75,7 +75,8 @@ APP.anim = function() {
 			eyecolor: getEyeColor(usermodel.eyecolor),
 			eyedialatormuscle: getEyeDialatorMuscleColor(usermodel.eyecolor),
 			haircolor: getHairColor(usermodel.haircolor),
-			freckles: getFreckles(usermodel.freckles),
+			// freckles: getFreckles(usermodel.freckles),
+			freckles: getFreckles("few"),
 			glasses: getGlasses(usermodel.eyesight),
 			neanderthal: getNeanderthal(usermodel.neanderthal)
 		};
@@ -85,17 +86,19 @@ APP.anim = function() {
 	function animEyes(animodel) {
 		var irisesFill = $('#radial-gradient-2 stop'),
 			irisesStroke = $('#iris-color-gradient, #iris-color-gradient-2'),
-			irisDialatorMuscle = irisesFill.find('g g g path');
+			irisDialatorMuscle = $('#triangles g g path, #triangles-2 g g path'),
+			baseColor = tinycolor(animodel.eyecolor);
 		var eyeTl = new TimelineMax();
-		irisesFill.each(function() {
-			var color = tinycolor( $(this).attr('stop-color'));
-			console.log(color.getLuminance());
+		eyeTl.add('start');
+		irisesFill.each( function(i, el) {
+			var luminance = (tinycolor($(el).attr('stop-color')).getLuminance()*100);
+			var color = baseColor.clone();
+			color.brighten(luminance);
+			eyeTl.to(el, 1.2, {attr: {'stop-color': color.toString() }}, 'start');
 		});
 		eyeTl
-			.add('start')
-			.to(irisesFill, 0.8, {attr: {'stop-color': animodel.eyecolor}}, 'start')
-			.to(irisesStroke, 0.8, {attr: {stroke: animodel.eyecolor}}, 'start')
-			.to(irisDialatorMuscle, 0.8, {attr: {stroke: animodel.eyedialatormuscle}}, 'start');
+			.to(irisesStroke, 1.2, {attr: {stroke: baseColor.lighten(10).toString() }}, 'start')
+			.to(irisDialatorMuscle, 1.2, {attr: {fill: animodel.eyedialatormuscle}}, 'start');
 		return eyeTl;	
 	}
 	function animGlasses(animodel) {
@@ -129,32 +132,44 @@ APP.anim = function() {
 		}
 	}
 	function animHaircolor(animodel) {
-		var hairClr = $('#linear-gradient stop');
-			eyebrows = $('#eyebrow path, #eyebrow-2 path');
+		var hairClr = $('#linear-gradient stop'),
+			eyebrows = $('#eyebrow path, #eyebrow-2 path'),
+			baseColor = tinycolor(animodel.haircolor);
 		var hairClrTl = new TimelineMax();
-		hairClrTl
-			.to(hairClr, 0.8, {attr: {'stop-color': animodel.haircolor}})
-			.to(eyebrows, 0.8, {attr: {stroke: animodel.haircolor}}, '-=0.8');
+		hairClrTl.add('start');
+		hairClr.each( function(i, el) {
+			var luminance = (tinycolor($(el).attr('stop-color')).getLuminance()*10);
+			console.log(luminance*luminance);
+			var color = baseColor.clone();
+			color.brighten(luminance*luminance);
+			hairClrTl.to(el, 0.8, {attr: {'stop-color': color.toString() }}, 'start');
+		});		
+		hairClrTl.to(eyebrows, 0.8, {attr: {stroke: baseColor.toString() }}, '-=0.8');
 		return hairClrTl;
 	}
 	function animFreckles(animodel) {
 		var freckles = $('#freckles polygon'),
-			frecklePortion = freckles.slice(0, animodel.freckles),
-			prevFreckleCount = 0; //keep count of number of freckles showing in the current SVG
+			currFreckleCount = animodel.freckles,
+			prevFreckleCount = 0; //count number of freckles currently visible
 		freckles.each(function() {
 			if ($(this).css('visibility') !== 'hidden') prevFreckleCount++;
 		});
 		var frecklesTl = new TimelineMax();
-		if (frecklePortion.length > prevFreckleCount) { //we want to show more freckles than the current svg has, but only add those is doesn't
-			frecklePortion = frecklePortion.slice(0,prevFreckleCount);
+		if (currFreckleCount > prevFreckleCount) {
+		//amount of freckles in the current model is greater than in the previous model
+		//we want to add more freckles, but only those that are not yet shown
+		//remove the freckles that are already showing from the start of the freckles array
+			freckles.splice(0,prevFreckleCount);
 			frecklesTl
-				.staggerTo(frecklePortion, 0.1, {autoAlpha: 1, ease: Back.easeOut.config(2)}, -0.05);
+				.staggerTo(freckles, 0.1, {autoAlpha: 1, ease: Power3.easeOut}, -0.06);
 			return frecklesTl;
 		}
-		if (frecklePortion.length < prevFreckleCount) { //there are more freckles showing than we want; we want to hide the extras
-			freckles = freckles.slice(0,frecklePortion.length);
+		if (currFreckleCount < prevFreckleCount) { 
+		//amount of freckles in the current model is less than in the previous model
+		//we want to hide the extra freckles from the end of the freckles array
+			freckles.splice(0,currFreckleCount);
 			frecklesTl
-				.staggerTo(freckles, 0.1, {autoAlpha: 0, ease: Back.easeIn.config(2)}, -0.05);
+				.staggerTo(freckles, 0.1, {autoAlpha: 0, ease: Power3.easeOut}, -0.06);
 			return frecklesTl;
 		}
 		return 'freckle-marker';
