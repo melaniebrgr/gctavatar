@@ -83,11 +83,14 @@ APP.anim = function() {
 
 	// Functions to create GSAP animations
 	function animEyes(animodel) {
-		//eyes
 		var irisesFill = $('#radial-gradient-2 stop'),
 			irisesStroke = $('#iris-color-gradient, #iris-color-gradient-2'),
 			irisDialatorMuscle = irisesFill.find('g g g path');
 		var eyeTl = new TimelineMax();
+		irisesFill.each(function() {
+			var color = tinycolor( $(this).attr('stop-color'));
+			console.log(color.getLuminance());
+		});
 		eyeTl
 			.add('start')
 			.to(irisesFill, 0.8, {attr: {'stop-color': animodel.eyecolor}}, 'start')
