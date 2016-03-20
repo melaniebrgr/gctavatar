@@ -1,6 +1,7 @@
-button {
+button, .button {
 	@extend .button-theme1;
-	margin: 0.4em 0;
+	display: inline-block;
+	margin: 0;
 	padding: em(16px, 22px) em(18px, 22px);
 }
 .button-theme1 {
@@ -17,5 +18,8 @@ button {
 	}
 	&:hover {
 		background-color: $coral;
+		color: rgba($white, 0.9);
+		border: 2px solid darken($coral, 10%);
+		cursor: pointer;
 	}
 }

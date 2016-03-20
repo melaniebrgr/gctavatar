@@ -764,8 +764,9 @@ APP.init = function() {
 		$('.text__results thead th').prepend(dropdownMenu);
 	}
 	function downloadPNG() {
-		// var html = document.querySelector("svg").parentNode.innerHTML;
-		$('button.getSVG').click(function() {
+
+
+		$('a.getSVG').click(function() {
 			// use vanilla JS to retrieve viewBox attribute info
 			// (jQuery converts attr name to lowercase by default, returning 'undefine')
 			var svg = document.querySelector('svg');
@@ -779,16 +780,14 @@ APP.init = function() {
 			    canvas.setAttribute('height', viewBox[3]);
 
 			var image = new Image;
-			  image.src = imgsrc;
-			  image.onload = function() {
-			      ctx.drawImage(image, 0, 0);
-			      var canvasdata = canvas.toDataURL("image/png");
-			      var a = document.createElement("a");
-			      a.textContent = "SAVESAVESAVESAVESAVESAVESAVE";
-			      a.download = "export_"+Date.now()+".png";
-			      a.href = canvasdata;
-			      document.body.appendChild(a);
-			};			
+			image.src = imgsrc;
+			ctx.drawImage(image, 0, 0);
+			var canvasdata = canvas.toDataURL("image/png");
+			var a = document.createElement("a");
+			a.textContent = "SAVESAVESAVESAVESAVESAVESAVE";
+			a.download = "export_"+Date.now()+".png";
+			a.href = canvasdata;
+			document.body.appendChild(a);		
 		});
 	}
 	function publicSetUI() {

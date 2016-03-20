@@ -407,11 +407,12 @@ a {
   outline-color: transparent;
   outline-style: none; }
 
-button {
-  margin: 0.4em 0;
+button, .button {
+  display: inline-block;
+  margin: 0;
   padding: 0.7272727273em 0.8181818182em; }
 
-.button-theme1, button {
+.button-theme1, button, .button {
   -webkit-transition: all 0.18s ease-in-out;
   transition: all 0.18s ease-in-out;
   background-color: #f84b56;
@@ -419,11 +420,14 @@ button {
   border-radius: 0.0909090909em;
   color: rgba(255, 255, 255, 0.9);
   font-size: 1.375em; }
-  .button-theme1 span, button span {
+  .button-theme1 span, button span, .button span {
     font-weight: 700;
     font-size: 1.1818181818em; }
-  .button-theme1:hover, button:hover {
-    background-color: #F7323F; }
+  .button-theme1:hover, button:hover, .button:hover {
+    background-color: #F7323F;
+    color: rgba(255, 255, 255, 0.9);
+    border: 2px solid #ed0918;
+    cursor: pointer; }
 
 header {
   position: fixed;
