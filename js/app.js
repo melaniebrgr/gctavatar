@@ -199,7 +199,6 @@ APP.anim = function() {
 			freckles = freckles.splice(0,currFreckleCount);
 			var position = freckles.length * 0.05 + 0.05 - 0.1;
 			position = '-=' + position;
-			console.log(position);
 			frecklesTl
 				.staggerTo(freckles, 0.1, {visibility:'hidden', ease: Power3.easeOut}, 0.05)
 				.staggerTo(freckles, 0.1, {visibility:'visible', ease: Power3.easeOut}, 0.05, position);
@@ -243,6 +242,7 @@ APP.model = function() {
 	// modelData variable will hold the error-checked reponse from 23andMe
 	var modelData = null;
 
+	// Functions to decode 23andMe genotype to phenotypes
 	function getEyeColor(b) {
 		// Determine if bases are AA, AG, or GG
 		// Given bases, set blue, green, and brown eye colour percentages
@@ -382,23 +382,40 @@ APP.model = function() {
 
 	// Create user prototype
 	function publicCreateUserModel(data) {
-		var usermodel = {};
-		usermodel.fullname = `${data.firstName} ${data.lastName}`;
-		usermodel.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
-		usermodel.freckles = getFreckles(data.genotypes[1].call);
-		usermodel.haircurl = getHairCurl(data.genotypes[2].call);
-		usermodel.eyesight = getGlasses(data.genotypes[3].call);
-		usermodel.neanderthal = getNeanderthal(data.neanderthal.proportion);
-		usermodel.haircolor = getHaircolor(
-			data.genotypes[5].call,
-			data.genotypes[6].call,
-			data.genotypes[7].call,
-			data.genotypes[8].call,
-			data.genotypes[9].call,
-			data.genotypes[10].call
-		);
-		console.log(usermodel);
-		return usermodel;
+		// var usermodel = {};
+		// usermodel.fullname = `${data.firstName} ${data.lastName}`;
+		// usermodel.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
+		// usermodel.freckles = getFreckles(data.genotypes[1].call);
+		// usermodel.haircurl = getHairCurl(data.genotypes[2].call);
+		// usermodel.eyesight = getGlasses(data.genotypes[3].call);
+		// usermodel.neanderthal = getNeanderthal(data.neanderthal.proportion);
+		// usermodel.haircolor = getHaircolor(
+		// 	data.genotypes[5].call,
+		// 	data.genotypes[6].call,
+		// 	data.genotypes[7].call,
+		// 	data.genotypes[8].call,
+		// 	data.genotypes[9].call,
+		// 	data.genotypes[10].call
+		// );
+		// console.log(usermodel);
+		// return usermodel;
+
+		return {
+			fullname: `${data.firstName} ${data.lastName}`,
+			eyecolor: getEyeColor(data.genotypes[0].call), //eventually use a switch statement to sort through SNPs
+			freckles: getFreckles(data.genotypes[1].call),
+			haircurl: getHairCurl(data.genotypes[2].call),
+			eyesight: getGlasses(data.genotypes[3].call),
+			neanderthal: getNeanderthal(data.neanderthal.proportion),
+			haircolor: getHaircolor(
+				data.genotypes[5].call,
+				data.genotypes[6].call,
+				data.genotypes[7].call,
+				data.genotypes[8].call,
+				data.genotypes[9].call,
+				data.genotypes[10].call
+			)
+		};
 	}
 
 	function publicSet(data) {
