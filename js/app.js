@@ -237,7 +237,7 @@ APP.anim = function() {
 	};
 }();
 
-// Build the user model that will be reference by the animation, html template
+// Create user model
 APP.model = function() {
 	// modelData variable will hold the error-checked reponse from 23andMe
 	var modelData = null;
@@ -380,26 +380,8 @@ APP.model = function() {
 		return haircolor;
 	}
 
-	// Create user prototype
+	// Create user prototype, and getter and setter
 	function publicCreateUserModel(data) {
-		// var usermodel = {};
-		// usermodel.fullname = `${data.firstName} ${data.lastName}`;
-		// usermodel.eyecolor = getEyeColor(data.genotypes[0].call);//eventually use a switch statement to sort through SNPs
-		// usermodel.freckles = getFreckles(data.genotypes[1].call);
-		// usermodel.haircurl = getHairCurl(data.genotypes[2].call);
-		// usermodel.eyesight = getGlasses(data.genotypes[3].call);
-		// usermodel.neanderthal = getNeanderthal(data.neanderthal.proportion);
-		// usermodel.haircolor = getHaircolor(
-		// 	data.genotypes[5].call,
-		// 	data.genotypes[6].call,
-		// 	data.genotypes[7].call,
-		// 	data.genotypes[8].call,
-		// 	data.genotypes[9].call,
-		// 	data.genotypes[10].call
-		// );
-		// console.log(usermodel);
-		// return usermodel;
-
 		return {
 			fullname: `${data.firstName} ${data.lastName}`,
 			eyecolor: getEyeColor(data.genotypes[0].call), //eventually use a switch statement to sort through SNPs
@@ -417,7 +399,6 @@ APP.model = function() {
 			)
 		};
 	}
-
 	function publicSet(data) {
 		modelData = data;
 	}
@@ -432,7 +413,7 @@ APP.model = function() {
 	};
 }();
 
-// res module parses the response from 23andMe
+// Parse response from 23andMe
 APP.res = function() {
 
 	// Creates random data based on https://randomuser.me/
@@ -680,7 +661,7 @@ APP.res = function() {
 	};
 }();
 
-// init module initializes the app: performs the AJAX request and attaches event handlers
+// Initialize app: perform the AJAX requests, attach event handlers
 APP.init = function() {
 
 	// Functions to perform AAJX requests
@@ -782,32 +763,34 @@ APP.init = function() {
 		dropdownMenu.append(listItems);
 		$('.text__results thead th').prepend(dropdownMenu);
 	}
-	// function downloadPNG() {
-	// 	var html = document.querySelector("svg").parentNode.innerHTML;
-	// 					//$('svg').html()
-	// 	var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
-	// 	var canvas = document.querySelector("canvas"),
-	// 	    context = canvas.getContext("2d");
-	// 	    canvas.setAttribute('width', 403);
-	// 	    canvas.setAttribute('height', 403);
+	function downloadPNG() {
+		// var html = document.querySelector("svg").parentNode.innerHTML;
+		var html = $('.vis__avatar').html();
+		var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+		var canvas = document.querySelector("canvas"),
+		    context = canvas.getContext("2d");
+		    canvas.setAttribute('width', 403);
+		    canvas.setAttribute('height', 403);
 
-	// 	var image = new Image;
-	// 	  image.src = imgsrc;
-	// 	  image.onload = function() {
-	// 	      context.drawImage(image, 0, 0);
-	// 	      var canvasdata = canvas.toDataURL("image/png");
-	// 	      var a = document.createElement("a");
-	// 	      a.textContent = "save";
-	// 	      a.download = "export_"+Date.now()+".png";
-	// 	      a.href = canvasdata;
-	// 	      document.body.appendChild(a);
-	// 	      canvas.parentNode.removeChild(canvas);
-	// 	};		
-	// }
+		var image = new Image;
+		  image.src = imgsrc;
+		  image.onload = function() {
+		      context.drawImage(image, 0, 0);
+		      var canvasdata = canvas.toDataURL("image/png");
+		      var a = document.createElement("a");
+		      a.textContent = "SAVESAVESAVESAVESAVESAVESAVE";
+		      a.download = "export_"+Date.now()+".png";
+		      a.href = canvasdata;
+		      document.body.appendChild(a);
+		      canvas.parentNode.removeChild(canvas);
+		};
+		console.log(image);	
+	}
 	function publicSetUI() {
 		setVisAvatarHeight();
 		handle23andMeConnect();
 		createDropdown();
+		downloadPNG();
 	}
 
 	return {
