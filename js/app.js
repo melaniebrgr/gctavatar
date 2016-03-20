@@ -764,9 +764,9 @@ APP.init = function() {
 		$('.text__results thead th').prepend(dropdownMenu);
 	}
 	function downloadPNG() {
+		var counter = 1;
 
-
-		$('a.getSVG').click(function() {
+		function svgData() {
 			// use vanilla JS to retrieve viewBox attribute info
 			// (jQuery converts attr name to lowercase by default, returning 'undefine')
 			var svg = document.querySelector('svg');
@@ -774,22 +774,30 @@ APP.init = function() {
 				viewBox = viewBox.split(/\s+|,/);
 			var html = $(svg).parent().html();
 			var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+			
+			return {
+				src: imgsrc,
+				w: viewBox[2],
+				h: viewBox[3]
+			}
+		}
+
+		$('a.getSVG').click(function() {
+						var svg = svgData();
 			var canvas = $('<canvas/>')[0],
 			    ctx = canvas.getContext('2d');
-			    canvas.setAttribute('width', viewBox[2]);
-			    canvas.setAttribute('height', viewBox[3]);
+			    canvas.setAttribute('width', svg.w);
+			    canvas.setAttribute('height', svg.h);
 
 			var image = new Image;
-			image.src = imgsrc;
+			image.src = svg.src;
 			ctx.drawImage(image, 0, 0);
 			var canvasdata = canvas.toDataURL("image/png");
-			var a = document.createElement("a");
-			a.textContent = "SAVESAVESAVESAVESAVESAVESAVE";
-			a.download = "export_"+Date.now()+".png";
-			a.href = canvasdata;
-			document.body.appendChild(a);		
+			$(this).attr('download', `GCTAvatar_${counter}.png`);
+			$(this).attr('href', canvasdata);
+			counter++;
 		});
-	}
+	}		
 	function publicSetUI() {
 		setVisAvatarHeight();
 		handle23andMeConnect();
