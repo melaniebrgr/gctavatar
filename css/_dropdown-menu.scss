@@ -39,7 +39,7 @@
 			list-style-type: none;
 			@include transition(all);
 			&:hover {
-				background-color: lighten($gold, 5%);
+				background-color: rgba($gold, 0.6);
 				cursor: pointer;
 			}
 		}

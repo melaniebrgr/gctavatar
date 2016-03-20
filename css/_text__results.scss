@@ -32,7 +32,7 @@
 .text__results--theme1 {
 	color: lighten($black, 45%);
 	table {
-		font-size: em(15px);
+		font-size: em(18px);
 		thead {
 			text-align: left;
 			tr th {
@@ -40,8 +40,11 @@
 			}
 		}
 		tbody {
+			tr td:first-child {
+				line-height: 2.8;
+			}
 			td + td {
-				font-size: em(24px);
+				font-size: em(28px, 18px);
 				color: lighten($black, 25%);
 			}
 			tr:first-child {
@@ -51,5 +54,12 @@
 				border-bottom: 3px solid $sky;
 			}
 		}
+		tr {
+			@include transition(all);
+		}
 	}	
+}
+.is-highlighted {
+	background-color: rgba($gold, 0.6);
+	td + td { color: $black; }
 }

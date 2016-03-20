@@ -69,41 +69,57 @@ APP.anim = function() {
 		// return neanderValues['high'];
 	}
 
-	// Returns object used to create animation
+	// Returns values used to create animation
 	function publicCreateAnimModel(usermodel) {
 		return {
+			base: usermodel,
 			eyecolor: getEyeColor(usermodel.eyecolor),
 			eyedialatormuscle: getEyeDialatorMuscleColor(usermodel.eyecolor),
 			haircolor: getHairColor(usermodel.haircolor),
-			// freckles: getFreckles(usermodel.freckles),
-			freckles: getFreckles("few"),
+			freckles: getFreckles(usermodel.freckles),
 			glasses: getGlasses(usermodel.eyesight),
 			neanderthal: getNeanderthal(usermodel.neanderthal)
 		};
 	}
 
 	// Functions to create GSAP animations
+	function animText(text, td, tr) {
+		var txtTl = new TimelineMax();
+		txtTl
+			.to(tr, 0.4, {className: '+=is-highlighted'})
+			.to(td, 0.2, {text: ""})
+			.to(td, 2.5, {text: text, ease:Power2.easeIn})
+			.to(tr, 0.4, {className: '-=is-highlighted'});
+		return txtTl;
+	}
 	function animEyes(animodel) {
 		var irisesFill = $('#radial-gradient-2 stop'),
 			irisesStroke = $('#iris-color-gradient, #iris-color-gradient-2'),
 			irisDialatorMuscle = $('#triangles g g path, #triangles-2 g g path'),
-			baseColor = tinycolor(animodel.eyecolor);
+			baseColor = tinycolor(animodel.eyecolor),
+			td = $('[data-trait="eyecolor"] + td'),
+			tr = td.parent();
 		var eyeTl = new TimelineMax();
-		eyeTl.add('start');
+		eyeTl
+			.add(animText(animodel.base.eyecolor, td, tr))
+			.add('start');
 		irisesFill.each( function(i, el) {
 			var luminance = (tinycolor($(el).attr('stop-color')).getLuminance()*100);
 			var color = baseColor.clone();
 			color.brighten(luminance);
-			eyeTl.to(el, 1.2, {attr: {'stop-color': color.toString() }}, 'start');
+			eyeTl.to(el, 1.2, {attr: {'stop-color': color.toString()}}, 'start');
 		});
 		eyeTl
-			.to(irisesStroke, 1.2, {attr: {stroke: baseColor.lighten(10).toString() }}, 'start')
+			.to(irisesStroke, 1.2, {attr: {stroke: baseColor.lighten(10).toString()}}, 'start')
 			.to(irisDialatorMuscle, 1.2, {attr: {fill: animodel.eyedialatormuscle}}, 'start');
 		return eyeTl;	
 	}
 	function animGlasses(animodel) {
-		var glasses = $('#glasses');
+		var glasses = $('#glasses'),
+			td = $('[data-trait="eyesight"] + td'),
+			tr = td.parent();
 		var glassesTl = new TimelineMax();
+		glassesTl.add(animText(animodel.base.eyesight, td, tr));
 		if (animodel.glasses) {
 		//put glasses on
 			if (glasses.css('visibility') === 'hidden') {
@@ -134,27 +150,34 @@ APP.anim = function() {
 	function animHaircolor(animodel) {
 		var hairClr = $('#linear-gradient stop'),
 			eyebrows = $('#eyebrow path, #eyebrow-2 path'),
-			baseColor = tinycolor(animodel.haircolor);
+			baseColor = tinycolor(animodel.haircolor),
+			td = $('[data-trait="haircolor"] + td'),
+			tr = td.parent();
 		var hairClrTl = new TimelineMax();
-		hairClrTl.add('start');
+		hairClrTl
+			.add(animText(animodel.base.haircolor, td, tr))
+			.add('start');
 		hairClr.each( function(i, el) {
 			var luminance = (tinycolor($(el).attr('stop-color')).getLuminance()*10);
-			console.log(luminance*luminance);
 			var color = baseColor.clone();
 			color.brighten(luminance*luminance);
 			hairClrTl.to(el, 0.8, {attr: {'stop-color': color.toString() }}, 'start');
 		});		
-		hairClrTl.to(eyebrows, 0.8, {attr: {stroke: baseColor.toString() }}, '-=0.8');
+		hairClrTl.to(eyebrows, 0.8, {attr: {stroke: baseColor.darken(5).toString() }}, '-=0.8');
 		return hairClrTl;
 	}
 	function animFreckles(animodel) {
 		var freckles = $('#freckles polygon'),
 			currFreckleCount = animodel.freckles,
-			prevFreckleCount = 0; //count number of freckles currently visible
+			prevFreckleCount = 0,
+			td = $('[data-trait="freckles"] + td'),
+			tr = td.parent();
 		freckles.each(function() {
+			//count number of freckles currently visible
 			if ($(this).css('visibility') !== 'hidden') prevFreckleCount++;
 		});
 		var frecklesTl = new TimelineMax();
+		frecklesTl.add(animText(animodel.base.freckles, td, tr));
 		if (currFreckleCount > prevFreckleCount) {
 		//amount of freckles in the current model is greater than in the previous model
 		//we want to add more freckles, but only those that are not yet shown
@@ -177,14 +200,18 @@ APP.anim = function() {
 	function animNeanderthal(animodel) {
 		var eyebrows = $('#eyebrow path, #eyebrow-2 path'),
 			eyebrowsStrokeWidth = parseInt($('#eyebrow path').attr('stroke-width'))*animodel.neanderthal,
-			nose = $('#nose path');
+			nose = $('#nose path'),
+			td = $('[data-trait="neanderthalness"] + td'),
+			tr = td.parent();
 		var neanderTl = new TimelineMax();
 		neanderTl
+			.add(animText(animodel.base.neanderthal, td, tr))
 			.to(eyebrows, 0.8, {attr: {'stroke-width': eyebrowsStrokeWidth}})
 			.to(nose, 0.8, {transformOrigin:'right top', scale: animodel.neanderthal});
 		return neanderTl;
 	}
 
+	//Main animation timeline
 	function publicRun(animodel) {
 		var mainTl = new TimelineMax();
 		mainTl
@@ -235,7 +262,6 @@ APP.model = function() {
 			}
 		}
 	}
-
 	function getFreckles(b) {
 		switch (b) {
 			case 'TT':
@@ -247,7 +273,6 @@ APP.model = function() {
 				return 'few';
 		}
 	}
-
 	function getHairCurl(b) {
 		switch (b) {
 			case 'TT':
@@ -259,7 +284,6 @@ APP.model = function() {
 				return 'straight';
 		}
 	}
-
 	function getGlasses(b) {
 		switch (b) {
 			case 'TT':
@@ -629,7 +653,7 @@ APP.res = function() {
 	};
 }();
 
-// init module initializes the app, e.g. performs the AJAX request, attaches event handlers
+// init module initializes the app: performs the AJAX request and attaches event handlers
 APP.init = function() {
 
 	// If access_token is available, remove access button and skip authorization
