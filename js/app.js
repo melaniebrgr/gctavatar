@@ -765,26 +765,31 @@ APP.init = function() {
 	}
 	function downloadPNG() {
 		// var html = document.querySelector("svg").parentNode.innerHTML;
-		var html = $('.vis__avatar').html();
-		var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
-		var canvas = document.querySelector("canvas"),
-		    context = canvas.getContext("2d");
-		    canvas.setAttribute('width', 403);
-		    canvas.setAttribute('height', 403);
+		$('button.getSVG').click(function() {
+			// use vanilla JS to retrieve viewBox attribute info
+			// (jQuery converts attr name to lowercase by default, returning 'undefine')
+			var svg = document.querySelector('svg');
+			var viewBox = svg.getAttribute('viewBox');
+				viewBox = viewBox.split(/\s+|,/);
+			var html = $(svg).parent().html();
+			var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+			var canvas = $('<canvas/>')[0],
+			    ctx = canvas.getContext('2d');
+			    canvas.setAttribute('width', viewBox[2]);
+			    canvas.setAttribute('height', viewBox[3]);
 
-		var image = new Image;
-		  image.src = imgsrc;
-		  image.onload = function() {
-		      context.drawImage(image, 0, 0);
-		      var canvasdata = canvas.toDataURL("image/png");
-		      var a = document.createElement("a");
-		      a.textContent = "SAVESAVESAVESAVESAVESAVESAVE";
-		      a.download = "export_"+Date.now()+".png";
-		      a.href = canvasdata;
-		      document.body.appendChild(a);
-		      canvas.parentNode.removeChild(canvas);
-		};
-		console.log(image);	
+			var image = new Image;
+			  image.src = imgsrc;
+			  image.onload = function() {
+			      ctx.drawImage(image, 0, 0);
+			      var canvasdata = canvas.toDataURL("image/png");
+			      var a = document.createElement("a");
+			      a.textContent = "SAVESAVESAVESAVESAVESAVESAVE";
+			      a.download = "export_"+Date.now()+".png";
+			      a.href = canvasdata;
+			      document.body.appendChild(a);
+			};			
+		});
 	}
 	function publicSetUI() {
 		setVisAvatarHeight();
