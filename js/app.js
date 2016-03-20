@@ -184,7 +184,7 @@ APP.anim = function() {
 		//remove the freckles that are already showing from the start of the freckles array
 			freckles.splice(0,prevFreckleCount);
 			frecklesTl
-				.staggerTo(freckles, 0.1, {autoAlpha: 1, ease: Power3.easeOut}, -0.06);
+				.staggerTo(freckles, 0.1, {visibility:'visible', ease: Power3.easeOut}, 0.05);
 			return frecklesTl;
 		}
 		if (currFreckleCount < prevFreckleCount) { 
@@ -192,10 +192,19 @@ APP.anim = function() {
 		//we want to hide the extra freckles from the end of the freckles array
 			freckles.splice(0,currFreckleCount);
 			frecklesTl
-				.staggerTo(freckles, 0.1, {autoAlpha: 0, ease: Power3.easeOut}, -0.06);
+				.staggerTo(freckles, 0.1, {visibility:'hidden', ease: Power3.easeOut}, 0.05);
 			return frecklesTl;
 		}
-		return 'freckle-marker';
+		if (currFreckleCount === prevFreckleCount && prevFreckleCount > 0) {
+			freckles = freckles.splice(0,currFreckleCount);
+			var position = freckles.length * 0.05 + 0.05 - 0.1;
+			position = '-=' + position;
+			console.log(position);
+			frecklesTl
+				.staggerTo(freckles, 0.1, {visibility:'hidden', ease: Power3.easeOut}, 0.05)
+				.staggerTo(freckles, 0.1, {visibility:'visible', ease: Power3.easeOut}, 0.05, position);
+			return frecklesTl;
+		}
 	}
 	function animNeanderthal(animodel) {
 		var eyebrows = $('#eyebrow path, #eyebrow-2 path'),
@@ -215,11 +224,12 @@ APP.anim = function() {
 	function publicRun(animodel) {
 		var mainTl = new TimelineMax();
 		mainTl
-			.add(animEyes(animodel))
-			.add(animGlasses(animodel))
-			.add(animHaircolor(animodel))
-			.add(animFreckles(animodel))
-			.add(animNeanderthal(animodel));
+			.add(animEyes(animodel), 'eyes')
+			.add(animGlasses(animodel), 'glassses')
+			.add(animHaircolor(animodel), 'haircolor')
+			.add(animFreckles(animodel), 'freckles')
+			.add(animNeanderthal(animodel), 'neaderthal');
+		// mainTl.seek('freckles+=1');
 	}
 
 	return {
@@ -656,8 +666,24 @@ APP.res = function() {
 // init module initializes the app: performs the AJAX request and attaches event handlers
 APP.init = function() {
 
-	// If access_token is available, remove access button and skip authorization
+	// Functions to perform AAJX requests
+	// Genes accessed from 23andMe
+	var publicGeneScope = [
+		'rs12913832', 
+		'rs2153271', 
+		'rs7349332', 
+		'rs10034228', 
+		'rs3827760', 
+		'rs12896399', 
+		'rs1667394', 
+		'rs12821256', 
+		'rs1805007', 
+		'rs1805008', 
+		'i3002507'
+	];
+	// AJAX request to 23andMe
 	function get23andMeData() {
+		// If access_token is available skip authorization
 		if ( Cookies.get('access_token') && !APP.model.get() ) {
 			// Load spinner
 			$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
@@ -674,22 +700,7 @@ APP.init = function() {
 			});
 		}
 	}
-
-	var publicGeneScope = [
-		'rs12913832', 
-		'rs2153271', 
-		'rs7349332', 
-		'rs10034228', 
-		'rs3827760', 
-		'rs12896399', 
-		'rs1667394', 
-		'rs12821256', 
-		'rs1805007', 
-		'rs1805008', 
-		'i3002507'
-	];
-
-	//First, get random data from randomuser API
+	// AJAX request to Randomuser API
 	function publicGetData() {
 		$.ajax({
 			url: 'https://randomuser.me/api/',
@@ -702,6 +713,7 @@ APP.init = function() {
 		});
 	}
 	
+	// Functions to set up UI
 	// Set button as link to 23andMe authorization
 	function handle23andMeConnect() {
 		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
@@ -712,7 +724,6 @@ APP.init = function() {
 			window.location.href = link;
 		});
 	}
-
 	// Set height of avatar image to match width
 	function setVisAvatarHeight() {
 		$('.vis__avatar').height( $('.vis__avatar').width() );
@@ -720,8 +731,7 @@ APP.init = function() {
 			$('.vis__avatar').height( $('.vis__avatar').width() );
 		}); 
 	}
-
-	// Create dropdown manu based on select element
+	// Create dropdown menu based on select element
 	function createDropdown() {
 		// Create a dropdown HTML element container
 		// Get every select option and append it as a div to the container
@@ -755,7 +765,28 @@ APP.init = function() {
 		dropdownMenu.append(listItems);
 		$('.text__results thead th').prepend(dropdownMenu);
 	}
+	// function downloadPNG() {
+	// 	var html = document.querySelector("svg").parentNode.innerHTML;
+	// 					//$('svg').html()
+	// 	var imgsrc = 'data:image/svg+xml;base64,'+ btoa(html);
+	// 	var canvas = document.querySelector("canvas"),
+	// 	    context = canvas.getContext("2d");
+	// 	    canvas.setAttribute('width', 403);
+	// 	    canvas.setAttribute('height', 403);
 
+	// 	var image = new Image;
+	// 	  image.src = imgsrc;
+	// 	  image.onload = function() {
+	// 	      context.drawImage(image, 0, 0);
+	// 	      var canvasdata = canvas.toDataURL("image/png");
+	// 	      var a = document.createElement("a");
+	// 	      a.textContent = "save";
+	// 	      a.download = "export_"+Date.now()+".png";
+	// 	      a.href = canvasdata;
+	// 	      document.body.appendChild(a);
+	// 	      canvas.parentNode.removeChild(canvas);
+	// 	};		
+	// }
 	function publicSetUI() {
 		setVisAvatarHeight();
 		handle23andMeConnect();
