@@ -88,7 +88,7 @@ APP.anim = function() {
 		txtTl
 			.to(tr, 0.4, {className: '+=is-highlighted'})
 			.to(td, 0.2, {text: ""})
-			.to(td, 2.5, {text: text, ease:Power2.easeIn})
+			.to(td, 2, {text: text, ease:Power2.easeIn})
 			.to(tr, 0.4, {className: '-=is-highlighted'});
 		return txtTl;
 	}
@@ -240,7 +240,7 @@ APP.anim = function() {
 // Create user model
 APP.model = function() {
 	// modelData variable will hold the error-checked reponse from 23andMe
-	var modelData = null;
+	var modelData = {};
 
 	// Functions to decode 23andMe genotype to phenotypes
 	function getEyeColor(b) {
@@ -399,8 +399,9 @@ APP.model = function() {
 			)
 		};
 	}
-	function publicSet(data) {
-		modelData = data;
+	function publicSet(animModel) {
+		// Setter expects animation object model
+		modelData[animModel.base.fullname] = animModel;
 	}
 	function publicGet() {
 		return modelData;
@@ -423,19 +424,15 @@ APP.res = function() {
 			word[0] = word[0].toUpperCase();
 			return word.join('');
 		}
-
 		function publicFirstName() {
 			return capFirstLetter(APP.ranUser.results[0].user.name.first) || "Jane";
 		}
-
 		function publicLastName() {
 			return capFirstLetter(APP.ranUser.results[0].user.name.last) || "Doe";
 		}
-
 		function publicGender() {
 			return { phenotype_id: 'sex', value: APP.ranUser.results[0].user.gender || "female" };
 		}
-
 		function publicAncestry() {
 			// 23andMe ancestry array structure:
 			var ancestry = [
@@ -469,7 +466,8 @@ APP.res = function() {
 			// get ranUser probable ancestry given nationality
 			var ranLabel = getLabel();
 			function getLabel() {
-				switch (APP.ranUser.nationality) {
+				var nationality = APP.ranUser.nationality || 'CA';
+				switch (nationality) {
 					case 'AU':
 						return 'Oceanian';
 					case 'BR':
@@ -534,7 +532,6 @@ APP.res = function() {
 			assignProportion(ancestry);
 			return ancestry;
 		}
-
 		function publicGenotypes() {
 			// This array will hold the bases for the locations defined in the 23andMe scope
 			var genotypes = [];
@@ -590,7 +587,6 @@ APP.res = function() {
 			// Return a random value between 0.005 and 0.05 (normal range is between 0.01 and 0.04)
 			return { proportion: +(Math.random() * ( 0.050 - 0.010 ) + 0.010).toFixed(3) };
 		}
-
 		return {
 			firstName: publicFirstName,
 			lastName: publicLastName,
@@ -682,19 +678,24 @@ APP.init = function() {
 	// AJAX request to 23andMe
 	function get23andMeData() {
 		// If access_token is available skip authorization
-		if ( Cookies.get('access_token') && !APP.model.get() ) {
+		if ( Cookies.get('access_token')) {
 			// Load spinner
 			$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
 			// Second, get genetic data from 23andMe
 			$.get( '/results.php', function(data) {
-				// Check the data for errors, then set to the model data
-				APP.model.set( APP.res.errCheck(data) );
-				console.log(APP.model.get());
-				console.log(APP.model.createUserModel(APP.model.get()));
+				// Check the data for errors
+				// console.log(data);
+				// console.log(APP.res.errCheck(data));
+				// console.log(APP.model.createUserModel(APP.res.errCheck(data)));
+				console.log(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
+				console.log(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
+				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
+				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.getRandom23andMeUser())));
 				// Remove spinner
 				$('.text .loading-spinner').remove();
 				$('.text__connect').toggle();
 				$('.text__results').toggle();
+				setUI_step2();
 			});
 		}
 	}
@@ -706,8 +707,7 @@ APP.init = function() {
 		})
 		.done( function(data) {
 			APP.ranUser = data;
-			// get23andMeData();
-			APP.anim.run(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
+			get23andMeData();
 		});
 	}
 	
@@ -734,6 +734,11 @@ APP.init = function() {
 		// Create a dropdown HTML element container
 		// Get every select option and append it as a div to the container
 		// On list-item click, set button text
+		var users = APP.model.get(),
+			userFilter = $('#user-filter');
+		for (var prop in users) {
+			userFilter.append(`<option>${prop}</option`);
+		}
 		var dropdownMenu = $('<span>', { 
 			class: 'dropdown-menu',
 		    click: function(){ $(this).find('.list-items').slideToggle(100)}
@@ -748,7 +753,7 @@ APP.init = function() {
 				text: text,
 				click: function() {
 					var text = $(this).text();
-					$('.dropdown-menu button').text( text );
+					$('.dropdown-menu button').text( text);
 					$('#user-filter > option').each(function() {
 						if ($(this).text() === text ) {
 							$(this).attr('selected', true);
@@ -756,6 +761,7 @@ APP.init = function() {
 							$(this).attr('selected', false);
 						}
 					});
+					APP.anim.run(APP.model.get()[text]);
 				}
 			});
 			listItems.append(item);
@@ -798,9 +804,11 @@ APP.init = function() {
 			counter++;
 		});
 	}		
-	function publicSetUI() {
+	function publicSetUI_step1() {
 		setVisAvatarHeight();
 		handle23andMeConnect();
+	}
+	function setUI_step2() {
 		createDropdown();
 		downloadPNG();
 	}
@@ -808,13 +816,13 @@ APP.init = function() {
 	return {
 		geneScope: publicGeneScope,
 		getData: publicGetData,
-		setUI: publicSetUI
+		setUI_step1: publicSetUI_step1
 	};
 }();
 
 // On document ready
 $(function() {
-	APP.init.setUI();
+	APP.init.setUI_step1();
 	// get randomData then get 23andMe data in callback
 	APP.init.getData();
 });

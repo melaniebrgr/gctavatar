@@ -16,7 +16,7 @@ curl_setopt_array($curl, array(
 curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
 $res = curl_exec($curl);
 $decodeRes = json_decode($res, true);
-$profileID = $decodeRes["profiles"][1]["id"];
+$profileID = $decodeRes["profiles"][0]["id"];
 
 // get Names: /1/demo/names/profile_id/
 $endpoint = 'https://api.23andme.com/1/demo/names/' . $profileID . '/';
