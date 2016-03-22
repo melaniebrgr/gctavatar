@@ -170,6 +170,7 @@ APP.anim = function() {
 		return hairClrTl;
 	}
 	function animFreckles(animodel) {
+		//all freckles hidden to some freckles showing: 0 to half
 		var freckles = $('#freckles polygon'),
 			currFreckleCount = animodel.freckles,
 			prevFreckleCount = 0,
@@ -186,6 +187,7 @@ APP.anim = function() {
 		//we want to add more freckles, but only those that are not yet shown
 		//remove the freckles that are already showing from the start of the freckles array
 			freckles.splice(0,prevFreckleCount);
+			freckles = freckles.splice(0,currFreckleCount);
 			frecklesTl
 				.staggerTo(freckles, 0.1, {visibility:'visible', ease: Power3.easeOut}, 0.05);
 			return frecklesTl;
