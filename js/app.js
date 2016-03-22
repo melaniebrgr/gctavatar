@@ -19,12 +19,18 @@ APP.math = function() {
 APP.anim = function() {
 	// Libraries to lookup values for animation
 	function getEyeColor(color) {
-		var colorHex = {
-			blue: '#1f74ad',
-			green: '#3a7c41',
-			brown: '#916b66'
-		};
-		return colorHex[color];
+		// var colorHex = {
+		// 	blue: '#1f74ad',
+		// 	green: '#3a7c41',
+		// 	brown: '#916b66'
+		// };
+		var baseHue = 193;
+		var colorShift = {
+			blue: {spin: (221-baseHue), hue: '#1f74ad'},
+			green: {spin: (128-baseHue), hue: '#3a7c41'},
+			brown: {spin: (21-baseHue), hue: '#916b66'}
+		};	
+		return colorShift[color];
 	}
 	function getEyeDialatorMuscleColor(color) {
 		var colorHex = {
@@ -61,9 +67,9 @@ APP.anim = function() {
 	}
 	function getNeanderthal(neanderthalness) {
 		var neanderValues = {
-			low: 0.75,
-			normal: 1,
-			high: 1.5
+			low: {scale: 0.75, stroke: 5},
+			normal: {scale: 1, stroke: 7},
+			high: {scale: 1.5, stroke: 9}
 		};
 		return neanderValues[neanderthalness];
 		// return neanderValues['high'];
@@ -96,7 +102,6 @@ APP.anim = function() {
 		var irisesFill = $('#radial-gradient-2 stop'),
 			irisesStroke = $('#iris-color-gradient, #iris-color-gradient-2'),
 			irisDialatorMuscle = $('#triangles g g path, #triangles-2 g g path'),
-			baseColor = tinycolor(animodel.eyecolor),
 			td = $('[data-trait="eyecolor"] + td'),
 			tr = td.parent();
 		var eyeTl = new TimelineMax();
@@ -104,13 +109,11 @@ APP.anim = function() {
 			.add(animText(animodel.base.eyecolor, td, tr))
 			.add('start');
 		irisesFill.each( function(i, el) {
-			var luminance = (tinycolor($(el).attr('stop-color')).getLuminance()*100);
-			var color = baseColor.clone();
-			color.brighten(luminance);
+			var color = tinycolor(APP.init.gradients.eyes[i]).spin(animodel.eyecolor.spin);
 			eyeTl.to(el, 1.2, {attr: {'stop-color': color.toString()}}, 'start');
 		});
 		eyeTl
-			.to(irisesStroke, 1.2, {attr: {stroke: baseColor.lighten(10).toString()}}, 'start')
+			.to(irisesStroke, 1.2, {attr: {stroke: animodel.eyecolor.hue}}, 'start')
 			.to(irisDialatorMuscle, 1.2, {attr: {fill: animodel.eyedialatormuscle}}, 'start');
 		return eyeTl;	
 	}
@@ -161,9 +164,9 @@ APP.anim = function() {
 			var luminance = (tinycolor($(el).attr('stop-color')).getLuminance()*10);
 			var color = baseColor.clone();
 			color.brighten(luminance*luminance);
-			hairClrTl.to(el, 0.8, {attr: {'stop-color': color.toString() }}, 'start');
+			hairClrTl.to(el, 0.8, {attr: {'stop-color': color.toString()}}, 'start');
 		});		
-		hairClrTl.to(eyebrows, 0.8, {attr: {stroke: baseColor.darken(5).toString() }}, '-=0.8');
+		hairClrTl.to(eyebrows, 0.8, {attr: {stroke: baseColor.darken(5).toString()}}, '-=0.8');
 		return hairClrTl;
 	}
 	function animFreckles(animodel) {
@@ -207,15 +210,15 @@ APP.anim = function() {
 	}
 	function animNeanderthal(animodel) {
 		var eyebrows = $('#eyebrow path, #eyebrow-2 path'),
-			eyebrowsStrokeWidth = parseInt($('#eyebrow path').attr('stroke-width'))*animodel.neanderthal,
+			// eyebrowsStrokeWidth = parseInt($('#eyebrow path').attr('stroke-width'))*animodel.neanderthal,
 			nose = $('#nose path'),
 			td = $('[data-trait="neanderthalness"] + td'),
 			tr = td.parent();
 		var neanderTl = new TimelineMax();
 		neanderTl
 			.add(animText(animodel.base.neanderthal, td, tr))
-			.to(eyebrows, 0.8, {attr: {'stroke-width': eyebrowsStrokeWidth}})
-			.to(nose, 0.8, {transformOrigin:'right top', scale: animodel.neanderthal});
+			.to(eyebrows, 0.8, {attr: {'stroke-width': animodel.neanderthal.stroke}})
+			.to(nose, 0.8, {transformOrigin:'right top', scale: animodel.neanderthal.scale});
 		return neanderTl;
 	}
 
@@ -675,6 +678,8 @@ APP.init = function() {
 		'rs1805008', 
 		'i3002507'
 	];
+	var publicGradients = {};
+
 	// AJAX request to 23andMe
 	function get23andMeData() {
 		// If access_token is available skip authorization
@@ -687,8 +692,8 @@ APP.init = function() {
 				// console.log(data);
 				// console.log(APP.res.errCheck(data));
 				// console.log(APP.model.createUserModel(APP.res.errCheck(data)));
-				console.log(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
-				console.log(APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
+				console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
+				console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
 				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.getRandom23andMeUser())));
 				// Remove spinner
@@ -803,10 +808,19 @@ APP.init = function() {
 			$(this).attr('href', canvasdata);
 			counter++;
 		});
+	}
+	function setGradients() {
+		var irises = $('#radial-gradient-2 stop'),
+			colors = [];
+		irises.each(function(i, el) {
+			colors.push($(el).attr('stop-color'));
+		});
+		publicGradients.eyes = colors;
 	}		
 	function publicSetUI_step1() {
 		setVisAvatarHeight();
 		handle23andMeConnect();
+		setGradients();
 	}
 	function setUI_step2() {
 		createDropdown();
@@ -816,7 +830,8 @@ APP.init = function() {
 	return {
 		geneScope: publicGeneScope,
 		getData: publicGetData,
-		setUI_step1: publicSetUI_step1
+		setUI_step1: publicSetUI_step1,
+		gradients: publicGradients
 	};
 }();
 
