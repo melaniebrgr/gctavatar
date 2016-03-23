@@ -1,5 +1,5 @@
 var APP = APP || {};
-var mainTl;
+
 // Utility functions
 APP.math = function() {
 	function publicMathRandom(max, min, int) {
@@ -85,7 +85,8 @@ APP.anim = function() {
 			haircolor: getHairColor(usermodel.haircolor),
 			freckles: getFreckles(usermodel.freckles),
 			glasses: getGlasses(usermodel.eyesight),
-			neanderthal: getNeanderthal(usermodel.neanderthal)
+			neanderthal: getNeanderthal(usermodel.neanderthal),
+			sex: usermodel.sex
 		};
 	}
 
@@ -100,7 +101,8 @@ APP.anim = function() {
 		return txtTl;
 	}
 	function animEyes(animodel) {
-		var irisesFill = $('#radial-gradient-2 stop'),
+		var irisesFill = $('[id$=radial-gradient-2] stop'),
+			// irisesFill = $('#radial-gradient-2 stop'),
 			irisesStroke = $('#iris-color-gradient, #iris-color-gradient-2'),
 			irisDialatorMuscle = $('#triangles g g path, #triangles-2 g g path'),
 			td = $('[data-trait="eyecolor"] + td'),
@@ -108,17 +110,18 @@ APP.anim = function() {
 		var eyeTl = new TimelineMax();
 		eyeTl
 			.add(animText(animodel.base.eyecolor, td, tr))
-			.add('start');
+			.addLabel('eye-animation-start');
 		irisesFill.each( function(i, el) {
 			var color = tinycolor(APP.init.gradients.eyes[i]).spin(animodel.eyecolor.spin);
-			eyeTl.to(el, 1.2, {attr: {'stop-color': color.toString()}}, 'start');
+			eyeTl.to(el, 1.2, {attr: {'stop-color': color.toString()}}, 'eye-animation-start');
 		});
 		eyeTl
-			.to(irisesStroke, 1.2, {attr: {stroke: animodel.eyecolor.hue}}, 'start')
-			.to(irisDialatorMuscle, 1.2, {attr: {fill: animodel.eyedialatormuscle}}, 'start');
+			.to(irisesStroke, 1.2, {attr: {stroke: animodel.eyecolor.hue}}, 'eye-animation-start')
+			.to(irisDialatorMuscle, 1.2, {attr: {fill: animodel.eyedialatormuscle}}, 'eye-animation-start');
 		return eyeTl;	
 	}
 	function animGlasses(animodel) {
+		// TO DO!
 		// Determine if starting with glasses on or off. They should both start in the same position, but glasses off should not be visible
 		// Determine if glasses should still be visible. There are accordingly four possible scenarios
 		// 1) Start visible, end on visible: glasses should bob up and down
@@ -161,10 +164,9 @@ APP.anim = function() {
 				// 	.to(glasses, 1, {transformOrigin: '90% top', rotation: 50, y: '-=110px', x: '+=10px', ease: Elastic.easeIn.config(1.2, 1), autoAlpha: 0})
 				// 	.set(glasses, {rotation: 0, y: 0, x: 0, autoAlpha: 0});
 				// return glassesTl;		
-				return 'glasses-label';		
+				glassesTl.addLabel('no-label');
+				return glassesTl;	
 			}
-		} else {
-			console.log('something broke');
 		}
 		/*
 		if (animodel.glasses) {
@@ -194,6 +196,7 @@ APP.anim = function() {
 		*/
 	}
 	function animHaircolor(animodel) {
+	// TO DO: Use tinycolor spin instead of luminance for hair colour
 		var hairClr = $('#linear-gradient stop'),
 			eyebrows = $('#eyebrow path, #eyebrow-2 path'),
 			baseColor = tinycolor(animodel.haircolor),
@@ -266,18 +269,50 @@ APP.anim = function() {
 			.to(nose, 0.8, {transformOrigin:'right top', scale: animodel.neanderthal.scale});
 		return neanderTl;
 	}
+	function animSex(animodel) {
+		var girl = $('#girl'),
+			boy = $('#boy'),
+			// currSex = animodel.sex.toLowerCase(),
+			currSex = 'male',
+			td = $('[data-trait="sex"] + td'),
+			tr = td.parent();	
+		var sexTl = new TimelineMax();
+		sexTl.add(animText(animodel.sex, td, tr));
+		if (currSex === 'female' && !girl.hasClass('is-hidden')) {
+			sexTl.addLabel('no-sex');
+			return sexTl;
+		} else if (currSex === 'female') {
+			sexTl
+				.to(boy, 0.5, {transformOrigin: "50% 50%", className: '+=is-hidden'})
+				.to(girl, 0.5, {transformOrigin: "50% 50%", className: '-=is-hidden'})
+				// .to(boy, 1, {scale: 0, autoAlpha: 0, ease: Back.easeIn.config(1.4), clearProps: 'scale', className: '+=is-hidden' })
+				// .fromTo(girl, 1, {scale: 0, ease: Back.easeOut.config(1.4), immediateRender: false, className: '+=is-hidden'}, {autoAlpha: 1}, '-=0.5');
+			return sexTl;
+		}
+		if (currSex === 'male' && !boy.hasClass('is-hidden')) {
+			sexTl.addLabel('no-sex');
+			return sexTl;
+		} else if (currSex === 'male') {
+			sexTl
+				.to(girl, 0.5, {transformOrigin: "50% 50%", className: '+=is-hidden'})
+				.to(boy, 0.5, {transformOrigin: "50% 50%", className: '-=is-hidden'})
+				// .to(boy, 1, {scale: 0, autoAlpha: 0, ease: Back.easeIn.config(1.4), clearProps: 'scale', className: '+=is-hidden' })
+				// .fromTo(girl, 1, {scale: 0, ease: Back.easeOut.config(1.4), immediateRender: false, className: '+=is-hidden'}, {autoAlpha: 1}, '-=0.5');
+			return sexTl;
+		}
+	}
 
 	function publicSetMainTl(animodel) {
-		mainTl = new TimelineMax({delay: 0.5});
+		window.mainTl = new TimelineMax({delay: 0.5});
 		mainTl
-			.add(animEyes(animodel), 'eyes')
-			.add(animGlasses(animodel), 'glassses')
-			.add(animHaircolor(animodel), 'haircolor')
-			.add(animFreckles(animodel), 'freckles')
-			.add(animNeanderthal(animodel), 'neaderthal');
+			.add(animSex(animodel))
+			.add(animEyes(animodel))
+			.add(animGlasses(animodel))
+			.add(animHaircolor(animodel))
+			.add(animFreckles(animodel))
+			.add(animNeanderthal(animodel));
 		// mainTl.seek('freckles+=1');
 		// mainTl.timeScale(3);
-		mainTl.play();
 	}
 
 	return {
@@ -445,7 +480,8 @@ APP.model = function() {
 				data.genotypes[8].call,
 				data.genotypes[9].call,
 				data.genotypes[10].call
-			)
+			),
+			sex: data.sex.value
 		};
 	}
 	function publicSet(animModel) {
@@ -735,8 +771,8 @@ APP.init = function() {
 			// Second, get genetic data from 23andMe
 			$.get( '/results.php', function(data) {
 				// console.log(data);
-				// console.log(APP.res.errCheck(data));
-				// console.log(APP.model.createUserModel(APP.res.errCheck(data)));
+				console.log(APP.res.errCheck(data));
+				console.log(APP.model.createUserModel(APP.res.errCheck(data)));
 				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
 				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 
@@ -817,7 +853,10 @@ APP.init = function() {
 							$(this).attr('selected', false);
 						}
 					});
+
 					// Retrieve animation model and start animation
+					mainTl.progress(0);
+					mainTl.clear();
 					APP.anim.setMainTl(APP.model.get()[text]);
 				}
 			});
