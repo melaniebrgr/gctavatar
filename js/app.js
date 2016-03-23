@@ -1,5 +1,5 @@
 var APP = APP || {};
-
+var mainTl;
 // Utility functions
 APP.math = function() {
 	function publicMathRandom(max, min, int) {
@@ -17,6 +17,7 @@ APP.math = function() {
 
 // Animation logic
 APP.anim = function() {
+
 	// Libraries to lookup values for animation
 	function getEyeColor(color) {
 		// var colorHex = {
@@ -46,7 +47,7 @@ APP.anim = function() {
 			'may wear glasses': APP.math.random() < 0.5 ? true : false,
 			'wears glasses': true
 		};
-		return glassesBool[glasses];
+		return glassesBool['does not wear glasses'];
 	}
 	function getHairColor(color) {
 		var colorHex = {
@@ -118,23 +119,64 @@ APP.anim = function() {
 		return eyeTl;	
 	}
 	function animGlasses(animodel) {
+		// Determine if starting with glasses on or off. They should both start in the same position, but glasses off should not be visible
+		// Determine if glasses should still be visible. There are accordingly four possible scenarios
+		// 1) Start visible, end on visible: glasses should bob up and down
+		// 2) Start visible, end hidden: glasses should fly off to the right and fade out, then be positioned back 'on the nose', display off
+		// 3) Start hidden, end visible: glasses should fly in from the left and fade in (will be at start position)
+		// 4) Start hidden, end hidden: glasses shoulf fly in then out, then be positioned back 'on the nose'
+		// In all cases, glasses should end back on the nose, either visible or hidden
 		var glasses = $('#glasses'),
 			td = $('[data-trait="eyesight"] + td'),
 			tr = td.parent();
 		var glassesTl = new TimelineMax();
 		glassesTl.add(animText(animodel.base.eyesight, td, tr));
-		if (animodel.glasses) {
-		//put glasses on
-			if (glasses.css('visibility') === 'hidden') {
-				glassesTl
-					.fromTo(glasses, 1, {transformOrigin: '10% top', rotation: -50, y: '-=110px', x: '-=10px', ease: Elastic.easeOut.config(1.2, 1)}, {autoAlpha: 1});
-				return glassesTl;
-			} else {
+	
+		if (glasses.css('visibility') !== 'hidden') {
+			// 1,2) Glasses start visible
+			if (animodel.glasses) {
+				// 1) Glasses end visible
 				glassesTl
 					.to(glasses, 0.2, {y: '+=4px', ease: Circ.easeOut})
 					.to(glasses, 0.75, {y: '-=4px', ease: Elastic.easeOut.config(1, 0.75)});
 				return glassesTl;
+			} else {
+				// 2) Glasses end hidden
+				glassesTl
+					.to(glasses, 1, {autoAlpha: 0, transformOrigin: '90% top', rotation: 50, y: '-=110px', x: '+=10px', ease: Elastic.easeIn.config(1.2, 1)})
+					.set(glasses, {rotation: 0, y: 0, x: 0, autoAlpha: 0});
+				return glassesTl;			
 			}
+		} else if (glasses.css('visibility') === 'hidden') {
+			// 3,4) Glasses start hidden
+			if (animodel.glasses) {
+				// 3) Glasses end visible
+				glassesTl
+					.fromTo(glasses, 1, {transformOrigin: '10% top', rotation: -50, y: '-=110px', x: '-=10px', ease: Elastic.easeOut.config(1.2, 1), immediateRender: false}, {autoAlpha: 1});
+				return glassesTl;
+			} else {
+				// 4) Glasses end hidden
+				// glassesTl
+				// 	.fromTo(glasses, 1, {transformOrigin: '10% top', rotation: -50, y: '-=110px', x: '-=10px', ease: Elastic.easeOut.config(1.2, 1), immediateRender: false}, {autoAlpha: 1})
+				// 	.to(glasses, 1, {transformOrigin: '90% top', rotation: 50, y: '-=110px', x: '+=10px', ease: Elastic.easeIn.config(1.2, 1), autoAlpha: 0})
+				// 	.set(glasses, {rotation: 0, y: 0, x: 0, autoAlpha: 0});
+				// return glassesTl;		
+				return 'glasses-label';		
+			}
+		} else {
+			console.log('something broke');
+		}
+		/*
+		if (animodel.glasses) {
+			if (glasses.css('visibility') === 'hidden') {
+				glassesTl
+					.fromTo(glasses, 1, {transformOrigin: '10% top', rotation: -50, y: '-=110px', x: '-=10px', ease: Elastic.easeOut.config(1.2, 1)}, {autoAlpha: 1});
+				return glassesTl;
+			}
+			glassesTl
+				.to(glasses, 0.2, {y: '+=4px', ease: Circ.easeOut})
+				.to(glasses, 0.75, {y: '-=4px', ease: Elastic.easeOut.config(1, 0.75)});
+			return glassesTl;
 		}
 		//take glasses off
 		if (glasses.css('visibility') === 'hidden') {
@@ -149,6 +191,7 @@ APP.anim = function() {
 				.set(glasses, {rotation: 0, y: '+=110px', x: '-=10px'});
 			return glassesTl;
 		}
+		*/
 	}
 	function animHaircolor(animodel) {
 		var hairClr = $('#linear-gradient stop'),
@@ -224,9 +267,8 @@ APP.anim = function() {
 		return neanderTl;
 	}
 
-	//Main animation timeline
-	function publicRun(animodel) {
-		var mainTl = new TimelineMax();
+	function publicSetMainTl(animodel) {
+		mainTl = new TimelineMax({delay: 0.5});
 		mainTl
 			.add(animEyes(animodel), 'eyes')
 			.add(animGlasses(animodel), 'glassses')
@@ -234,11 +276,13 @@ APP.anim = function() {
 			.add(animFreckles(animodel), 'freckles')
 			.add(animNeanderthal(animodel), 'neaderthal');
 		// mainTl.seek('freckles+=1');
+		// mainTl.timeScale(3);
+		mainTl.play();
 	}
 
 	return {
 		createAnimModel: publicCreateAnimModel,
-		run: publicRun
+		setMainTl: publicSetMainTl
 	};
 }();
 
@@ -690,19 +734,24 @@ APP.init = function() {
 			$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
 			// Second, get genetic data from 23andMe
 			$.get( '/results.php', function(data) {
-				// Check the data for errors
 				// console.log(data);
 				// console.log(APP.res.errCheck(data));
 				// console.log(APP.model.createUserModel(APP.res.errCheck(data)));
-				console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
-				console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
+				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
+				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
+
+				// Set 23andMe user and randow user to public object properties
 				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
 				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.getRandom23andMeUser())));
+
 				// Remove spinner
 				$('.text .loading-spinner').remove();
 				$('.text__connect').toggle();
 				$('.text__results').toggle();
 				setUI_step2();
+
+				// Start animation
+				APP.anim.setMainTl(APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
 			});
 		}
 	}
@@ -758,7 +807,7 @@ APP.init = function() {
 			} 
 			var item = $('<li>', {
 				text: text,
-				click: function() {
+				click: function(e) {
 					var text = $(this).text();
 					$('.dropdown-menu button').text( text);
 					$('#user-filter > option').each(function() {
@@ -768,7 +817,8 @@ APP.init = function() {
 							$(this).attr('selected', false);
 						}
 					});
-					APP.anim.run(APP.model.get()[text]);
+					// Retrieve animation model and start animation
+					APP.anim.setMainTl(APP.model.get()[text]);
 				}
 			});
 			listItems.append(item);
