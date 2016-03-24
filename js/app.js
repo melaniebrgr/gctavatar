@@ -86,7 +86,7 @@ APP.anim = function() {
 			freckles: getFreckles(usermodel.freckles),
 			glasses: getGlasses(usermodel.eyesight),
 			neanderthal: getNeanderthal(usermodel.neanderthal),
-			sex: usermodel.sex
+			sex: 'male'
 		};
 	}
 
@@ -270,36 +270,36 @@ APP.anim = function() {
 		return neanderTl;
 	}
 	function animSex(animodel) {
-		var girl = $('#girl'),
-			boy = $('#boy'),
-			// currSex = animodel.sex.toLowerCase(),
-			currSex = 'male',
+		var currSex = 'male',
 			td = $('[data-trait="sex"] + td'),
 			tr = td.parent();	
 		var sexTl = new TimelineMax();
 		sexTl.add(animText(animodel.sex, td, tr));
-		if (currSex === 'female' && !girl.hasClass('is-hidden')) {
-			sexTl.addLabel('no-sex');
-			return sexTl;
-		} else if (currSex === 'female') {
-			sexTl
-				.to(boy, 0.5, {transformOrigin: "50% 50%", className: '+=is-hidden'})
-				.to(girl, 0.5, {transformOrigin: "50% 50%", className: '-=is-hidden'})
-				// .to(boy, 1, {scale: 0, autoAlpha: 0, ease: Back.easeIn.config(1.4), clearProps: 'scale', className: '+=is-hidden' })
-				// .fromTo(girl, 1, {scale: 0, ease: Back.easeOut.config(1.4), immediateRender: false, className: '+=is-hidden'}, {autoAlpha: 1}, '-=0.5');
-			return sexTl;
-		}
-		if (currSex === 'male' && !boy.hasClass('is-hidden')) {
-			sexTl.addLabel('no-sex');
-			return sexTl;
-		} else if (currSex === 'male') {
-			sexTl
-				.to(girl, 0.5, {transformOrigin: "50% 50%", className: '+=is-hidden'})
-				.to(boy, 0.5, {transformOrigin: "50% 50%", className: '-=is-hidden'})
-				// .to(boy, 1, {scale: 0, autoAlpha: 0, ease: Back.easeIn.config(1.4), clearProps: 'scale', className: '+=is-hidden' })
-				// .fromTo(girl, 1, {scale: 0, ease: Back.easeOut.config(1.4), immediateRender: false, className: '+=is-hidden'}, {autoAlpha: 1}, '-=0.5');
-			return sexTl;
-		}
+		$('.vis__avatar').html(APP.boySVG);
+
+		// if (currSex === 'female' && !girl.hasClass('is-hidden')) {
+		// 	sexTl.addLabel('no-sex');
+		// 	return sexTl;
+		// } else if (currSex === 'female') {
+		// 	sexTl
+		// 		.to(boy, 0.5, {transformOrigin: "50% 50%", className: '+=is-hidden'})
+		// 		.to(girl, 0.5, {transformOrigin: "50% 50%", className: '-=is-hidden'})
+		// 		// .to(boy, 1, {scale: 0, autoAlpha: 0, ease: Back.easeIn.config(1.4), clearProps: 'scale', className: '+=is-hidden' })
+		// 		// .fromTo(girl, 1, {scale: 0, ease: Back.easeOut.config(1.4), immediateRender: false, className: '+=is-hidden'}, {autoAlpha: 1}, '-=0.5');
+		// 	return sexTl;
+		// }
+		// if (currSex === 'male' && !boy.hasClass('is-hidden')) {
+		// 	sexTl.addLabel('no-sex');
+		// 	return sexTl;
+		// } else if (currSex === 'male') {
+		// 	sexTl
+		// 		.to(girl, 0.5, {transformOrigin: "50% 50%", className: '+=is-hidden'})
+		// 		.to(boy, 0.5, {transformOrigin: "50% 50%", className: '-=is-hidden'})
+		// 		// .to(boy, 1, {scale: 0, autoAlpha: 0, ease: Back.easeIn.config(1.4), clearProps: 'scale', className: '+=is-hidden' })
+		// 		// .fromTo(girl, 1, {scale: 0, ease: Back.easeOut.config(1.4), immediateRender: false, className: '+=is-hidden'}, {autoAlpha: 1}, '-=0.5');
+		// 	return sexTl;
+		// }
+		return sexTl;
 	}
 
 	function publicSetMainTl(animodel) {
@@ -760,6 +760,8 @@ APP.init = function() {
 		'rs1805008', 
 		'i3002507'
 	];
+
+	// Preserves gradient data from initial SVG
 	var publicGradients = {};
 
 	// AJAX request to 23andMe
@@ -771,8 +773,8 @@ APP.init = function() {
 			// Second, get genetic data from 23andMe
 			$.get( '/results.php', function(data) {
 				// console.log(data);
-				console.log(APP.res.errCheck(data));
-				console.log(APP.model.createUserModel(APP.res.errCheck(data)));
+				// console.log(APP.res.errCheck(data));
+				// console.log(APP.model.createUserModel(APP.res.errCheck(data)));
 				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
 				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 
@@ -784,15 +786,17 @@ APP.init = function() {
 				$('.text .loading-spinner').remove();
 				$('.text__connect').toggle();
 				$('.text__results').toggle();
-				setUI_step2();
+
+				// Set up drowpdown menu and PNG download button
+				step2();
 
 				// Start animation
 				APP.anim.setMainTl(APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
 			});
 		}
 	}
-	// AJAX request to Randomuser API
-	function publicGetData() {
+	// AJAX request to Randomuser API; get 23andMe data on done
+	function getRandomData() {
 		$.ajax({
 			url: 'https://randomuser.me/api/',
 			dataType: 'json'
@@ -802,10 +806,36 @@ APP.init = function() {
 			get23andMeData();
 		});
 	}
+
+	// AJAX request for boy and girl SVG; get random data on done
+	function getSVG() {
+		$.ajax({
+			url: '/img/boy-04.svg',
+			dataType: 'xml'
+		})
+		.done(function( data, textStatus, jqXHR ){ 
+			APP.boySVG = $(data).find('svg');
+		});
+		$.ajax({
+			url: '/img/girl-07.svg',
+			dataType: 'xml'
+		})
+		.done(function( data, textStatus, jqXHR ){ 
+			APP.girlSVG = $(data).find('svg');
+			$('.vis__avatar').html($(data).find('svg'));
+
+			// With SVG loaded into document, do a little housekeeping
+			setGradients();
+			setVisAvatarHeight();
+
+			// Get random user data
+			getRandomData();
+		});		
+	}
 	
 	// Functions to set up UI
 	// Set button as link to 23andMe authorization
-	function handle23andMeConnect() {
+	function handle23andMeConnectBtn() {
 		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
 		publicGeneScope.forEach(function(el) {
 			link += ` ${el}`;
@@ -855,7 +885,7 @@ APP.init = function() {
 					});
 
 					// Retrieve animation model and start animation
-					mainTl.progress(0);
+					mainTl.progress(1);
 					mainTl.clear();
 					APP.anim.setMainTl(APP.model.get()[text]);
 				}
@@ -870,7 +900,7 @@ APP.init = function() {
 
 		function svgData() {
 			// use vanilla JS to retrieve viewBox attribute info
-			// (jQuery converts attr name to lowercase by default, returning 'undefine')
+			// (jQuery converts attr name to lowercase by default, returning 'undefined')
 			var svg = document.querySelector('svg');
 			var viewBox = svg.getAttribute('viewBox');
 				viewBox = viewBox.split(/\s+|,/);
@@ -885,7 +915,7 @@ APP.init = function() {
 		}
 
 		$('a.getSVG').click(function() {
-						var svg = svgData();
+			var svg = svgData();
 			var canvas = $('<canvas/>')[0],
 			    ctx = canvas.getContext('2d');
 			    canvas.setAttribute('width', svg.w);
@@ -908,27 +938,23 @@ APP.init = function() {
 		});
 		publicGradients.eyes = colors;
 	}		
-	function publicSetUI_step1() {
-		setVisAvatarHeight();
-		handle23andMeConnect();
-		setGradients();
+	function publicStep1() {
+		handle23andMeConnectBtn();
+		getSVG();
 	}
-	function setUI_step2() {
+	function step2() {
 		createDropdown();
 		downloadPNG();
 	}
 
 	return {
 		geneScope: publicGeneScope,
-		getData: publicGetData,
-		setUI_step1: publicSetUI_step1,
+		step1: publicStep1,
 		gradients: publicGradients
 	};
 }();
 
 // On document ready
 $(function() {
-	APP.init.setUI_step1();
-	// get randomData then get 23andMe data in callback
-	APP.init.getData();
+	APP.init.step1();
 });
