@@ -810,23 +810,27 @@ APP.init = function() {
 	// AJAX request for boy and girl SVG; get random data on done
 	function getSVG() {
 		$.ajax({
-			url: '/img/boy-04.svg',
+			url: '/img/boy-05.svg',
 			dataType: 'xml'
 		})
 		.done(function( data, textStatus, jqXHR ){ 
 			APP.boySVG = $(data).find('svg');
 		});
 		$.ajax({
-			url: '/img/girl-07.svg',
+			url: '/img/girl-08.svg',
 			dataType: 'xml'
 		})
 		.done(function( data, textStatus, jqXHR ){ 
 			APP.girlSVG = $(data).find('svg');
-			$('.vis__avatar').html($(data).find('svg'));
 
-			// With SVG loaded into document, do a little housekeeping
+			// Display girl SVG
+			var svgTl = new TimelineMax();
+			TweenMax.set(APP.girlSVG, {autoAlpha:0}) 
+			$('.vis__avatar').html($(data).find('svg'));
+			TweenMax.to(APP.girlSVG, 0.5, {autoAlpha:1})
+
+			// With SVG loaded into document record gradient data
 			setGradients();
-			setVisAvatarHeight();
 
 			// Get random user data
 			getRandomData();
@@ -939,6 +943,7 @@ APP.init = function() {
 		publicGradients.eyes = colors;
 	}		
 	function publicStep1() {
+		setVisAvatarHeight();
 		handle23andMeConnectBtn();
 		getSVG();
 	}
