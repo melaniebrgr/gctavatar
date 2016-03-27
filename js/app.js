@@ -121,7 +121,6 @@ APP.anim = function() {
 		return eyeTl;	
 	}
 	function animGlasses(animodel) {
-		// TO DO!
 		// Determine if starting with glasses on or off. They should both start in the same position, but glasses off should not be visible
 		// Determine if glasses should still be visible. There are accordingly four possible scenarios
 		// 1) Start visible, end on visible: glasses should bob up and down
@@ -168,32 +167,6 @@ APP.anim = function() {
 				return glassesTl;	
 			}
 		}
-		/*
-		if (animodel.glasses) {
-			if (glasses.css('visibility') === 'hidden') {
-				glassesTl
-					.fromTo(glasses, 1, {transformOrigin: '10% top', rotation: -50, y: '-=110px', x: '-=10px', ease: Elastic.easeOut.config(1.2, 1)}, {autoAlpha: 1});
-				return glassesTl;
-			}
-			glassesTl
-				.to(glasses, 0.2, {y: '+=4px', ease: Circ.easeOut})
-				.to(glasses, 0.75, {y: '-=4px', ease: Elastic.easeOut.config(1, 0.75)});
-			return glassesTl;
-		}
-		//take glasses off
-		if (glasses.css('visibility') === 'hidden') {
-			glassesTl
-				.fromTo(glasses, 1, {transformOrigin: '10% top', rotation: -50, y: '-=110px', x: '-=10px', ease: Elastic.easeOut.config(1.2, 1)}, {autoAlpha: 1})
-				.to(glasses, 1, {transformOrigin: '90% top', rotation: 50, y: '-=110px', x: '+=10px', ease: Elastic.easeIn.config(1.2, 1), autoAlpha: 0})
-				.set(glasses, {rotation: 0, y: '+=110px', x: '-=10px'});
-			return glassesTl;
-		} else {
-			glassesTl
-				.to(glasses, 1, {autoAlpha: 0, transformOrigin: '90% top', rotation: 50, y: '-=110px', x: '+=10px', ease: Elastic.easeIn.config(1.2, 1)})
-				.set(glasses, {rotation: 0, y: '+=110px', x: '-=10px'});
-			return glassesTl;
-		}
-		*/
 	}
 	function animHaircolor(animodel) {
 	// TO DO: Use tinycolor spin instead of luminance for hair colour
@@ -284,21 +257,21 @@ APP.anim = function() {
 		} else if (currSex === "female") {
 			sexTl
 				.set(APP.girlSVG, {autoAlpha:0})
-				.to(prevSVG, 1, {autoAlpha: 0, ease: Back.easeIn, onComplete: function() {$('.vis__avatar').html(APP.girlSVG);}})
-				.to(APP.girlSVG, 1, {autoAlpha: 1, ease: Back.easeOut});
+				.to(prevSVG, 1, {autoAlpha: 0, onComplete: function() {$('.vis__avatar').html(APP.girlSVG);}})
+				.to(APP.girlSVG, 1, {autoAlpha: 1});
 			return sexTl
 		} else if (currSex === "male") {
 			sexTl
 				.set(APP.boySVG, {autoAlpha:0})
-				.to(prevSVG, 1, {autoAlpha: 0, ease: Back.easeIn, onComplete: function() {$('.vis__avatar').html(APP.boySVG);}})
-				.to(APP.boySVG, 1, {autoAlpha: 1, ease: Back.easeOut});
+				.to(prevSVG, 1, {autoAlpha: 0, onComplete: function() {$('.vis__avatar').html(APP.boySVG);}})
+				.to(APP.boySVG, 1, {autoAlpha: 1});
 			return sexTl			
 		}
 		return sexTl;
 	}
 
 	function publicSetMainTl(animodel) {
-		window.mainTl = new TimelineMax({delay: 0.5});
+		window.mainTl = new TimelineMax({delay: 1.5});
 		function addTls() {
 			mainTl
 				.add(animEyes(animodel))
@@ -766,10 +739,26 @@ APP.init = function() {
 	// AJAX request to 23andMe
 	function get23andMeData() {
 		// If access_token is available skip authorization
-		if ( Cookies.get('access_token')) {
-			// Load spinner
-			$('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
-			// Second, get genetic data from 23andMe
+		if (Cookies.get('access_token')) {
+			
+			// Show loading animation
+			var modal = $('.loading'),
+				letters = $('.loading span');
+				console.log(letters);
+			TweenMax.to(modal, 0.3, {autoAlpha: 1});
+			var loadingTl = new TimelineMax({delay: 0.4, repeat: -1, repeatDelay: 0.8});
+			loadingTl
+				.to(letters[0], 0.4, {y: '-=25', ease: Power3.easeOut})
+				.to(letters[0], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
+				.to(letters[1], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
+				.to(letters[1], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
+				.to(letters[2], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
+				.to(letters[2], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
+				.to(letters[3], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
+				.to(letters[3], 0.4, {y: 0, ease: Back.easeOut.config(2.5)});
+
+			// $('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
+			//Second, get genetic data from 23andMe
 			$.get( '/results.php', function(data) {
 				// console.log(data);
 				// console.log(APP.res.errCheck(data));
@@ -781,8 +770,8 @@ APP.init = function() {
 				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
 				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.getRandom23andMeUser())));
 
-				// Remove spinner
-				$('.text .loading-spinner').remove();
+				// Hide loading modal, show results
+				TweenMax.to(modal, 0.3, {autoAlpha: 0});
 				$('.text__connect').toggle();
 				$('.text__results').toggle();
 

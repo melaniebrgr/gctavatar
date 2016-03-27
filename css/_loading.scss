@@ -1,0 +1,19 @@
+.loading {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	pointer-events: none;
+	background-color: rgba($aqua, 0.7);
+	opacity: 0;
+}
+.loading__container {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateY(-50%) translateX(-50%);
+	font: 700 3em 'Cabin Sketch', sans-serif;
+	color: $white;
+	span {
+		display: inline-block;
+	}
+}
