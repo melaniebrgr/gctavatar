@@ -68,9 +68,9 @@ APP.anim = function() {
 	}
 	function getNeanderthal(neanderthalness) {
 		var neanderValues = {
-			low: {scale: 0.75, stroke: 5},
+			low: {scale: 0.75, stroke: 4},
 			normal: {scale: 1, stroke: 7},
-			high: {scale: 1.5, stroke: 9}
+			high: {scale: 1.5, stroke: 11}
 		};
 		return neanderValues[neanderthalness];
 		// return neanderValues['high'];
@@ -86,7 +86,7 @@ APP.anim = function() {
 			freckles: getFreckles(usermodel.freckles),
 			glasses: getGlasses(usermodel.eyesight),
 			neanderthal: getNeanderthal(usermodel.neanderthal),
-			sex: 'male'
+			sex: usermodel.sex
 		};
 	}
 
@@ -258,7 +258,6 @@ APP.anim = function() {
 	}
 	function animNeanderthal(animodel) {
 		var eyebrows = $('#eyebrow path, #eyebrow-2 path'),
-			// eyebrowsStrokeWidth = parseInt($('#eyebrow path').attr('stroke-width'))*animodel.neanderthal,
 			nose = $('#nose path'),
 			td = $('[data-trait="neanderthalness"] + td'),
 			tr = td.parent();
@@ -270,47 +269,47 @@ APP.anim = function() {
 		return neanderTl;
 	}
 	function animSex(animodel) {
-		var currSex = 'male',
+		var currSex = animodel.sex,
+			prevSVG = $('.vis__avatar svg'),
+			prevSex = prevSVG.attr('class'),
 			td = $('[data-trait="sex"] + td'),
-			tr = td.parent();	
+			tr = td.parent();
 		var sexTl = new TimelineMax();
 		sexTl.add(animText(animodel.sex, td, tr));
-		$('.vis__avatar').html(APP.boySVG);
+		console.log(`prevSex: ${prevSex}`);
+		console.log(`currSex: ${currSex}`);
 
-		// if (currSex === 'female' && !girl.hasClass('is-hidden')) {
-		// 	sexTl.addLabel('no-sex');
-		// 	return sexTl;
-		// } else if (currSex === 'female') {
-		// 	sexTl
-		// 		.to(boy, 0.5, {transformOrigin: "50% 50%", className: '+=is-hidden'})
-		// 		.to(girl, 0.5, {transformOrigin: "50% 50%", className: '-=is-hidden'})
-		// 		// .to(boy, 1, {scale: 0, autoAlpha: 0, ease: Back.easeIn.config(1.4), clearProps: 'scale', className: '+=is-hidden' })
-		// 		// .fromTo(girl, 1, {scale: 0, ease: Back.easeOut.config(1.4), immediateRender: false, className: '+=is-hidden'}, {autoAlpha: 1}, '-=0.5');
-		// 	return sexTl;
-		// }
-		// if (currSex === 'male' && !boy.hasClass('is-hidden')) {
-		// 	sexTl.addLabel('no-sex');
-		// 	return sexTl;
-		// } else if (currSex === 'male') {
-		// 	sexTl
-		// 		.to(girl, 0.5, {transformOrigin: "50% 50%", className: '+=is-hidden'})
-		// 		.to(boy, 0.5, {transformOrigin: "50% 50%", className: '-=is-hidden'})
-		// 		// .to(boy, 1, {scale: 0, autoAlpha: 0, ease: Back.easeIn.config(1.4), clearProps: 'scale', className: '+=is-hidden' })
-		// 		// .fromTo(girl, 1, {scale: 0, ease: Back.easeOut.config(1.4), immediateRender: false, className: '+=is-hidden'}, {autoAlpha: 1}, '-=0.5');
-		// 	return sexTl;
-		// }
+		if (currSex === prevSex) {
+			return sexTl;
+		} else if (currSex === "female") {
+			sexTl
+				.set(APP.girlSVG, {autoAlpha:0})
+				.to(prevSVG, 1, {autoAlpha: 0, ease: Back.easeIn, onComplete: function() {$('.vis__avatar').html(APP.girlSVG);}})
+				.to(APP.girlSVG, 1, {autoAlpha: 1, ease: Back.easeOut});
+			return sexTl
+		} else if (currSex === "male") {
+			sexTl
+				.set(APP.boySVG, {autoAlpha:0})
+				.to(prevSVG, 1, {autoAlpha: 0, ease: Back.easeIn, onComplete: function() {$('.vis__avatar').html(APP.boySVG);}})
+				.to(APP.boySVG, 1, {autoAlpha: 1, ease: Back.easeOut});
+			return sexTl			
+		}
 		return sexTl;
 	}
 
 	function publicSetMainTl(animodel) {
 		window.mainTl = new TimelineMax({delay: 0.5});
+		function addTls() {
+			mainTl
+				.add(animEyes(animodel))
+				.add(animGlasses(animodel))
+				.add(animHaircolor(animodel))
+				.add(animFreckles(animodel))
+				.add(animNeanderthal(animodel));
+		}
 		mainTl
 			.add(animSex(animodel))
-			.add(animEyes(animodel))
-			.add(animGlasses(animodel))
-			.add(animHaircolor(animodel))
-			.add(animFreckles(animodel))
-			.add(animNeanderthal(animodel));
+			.addCallback(addTls);
 		// mainTl.seek('freckles+=1');
 		// mainTl.timeScale(3);
 	}
@@ -825,9 +824,7 @@ APP.init = function() {
 
 			// Display girl SVG
 			var svgTl = new TimelineMax();
-			TweenMax.set(APP.girlSVG, {autoAlpha:0}) 
 			$('.vis__avatar').html($(data).find('svg'));
-			TweenMax.to(APP.girlSVG, 0.5, {autoAlpha:1})
 
 			// With SVG loaded into document record gradient data
 			setGradients();
@@ -889,7 +886,8 @@ APP.init = function() {
 					});
 
 					// Retrieve animation model and start animation
-					mainTl.progress(1);
+					mainTl.progress(0);
+					mainTl.pause();
 					mainTl.clear();
 					APP.anim.setMainTl(APP.model.get()[text]);
 				}
