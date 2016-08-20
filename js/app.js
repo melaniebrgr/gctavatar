@@ -12,7 +12,7 @@ APP.math = function() {
 	}
 	return {
 		random: publicMathRandom
-	}
+	};
 }();
 
 // Animation logic
@@ -47,7 +47,7 @@ APP.anim = function() {
 			'may wear glasses': APP.math.random() < 0.5 ? true : false,
 			'wears glasses': true
 		};
-		return glassesBool['does not wear glasses'];
+		return glassesBool[glasses];
 	}
 	function getHairColor(color) {
 		var colorHex = {
@@ -87,6 +87,7 @@ APP.anim = function() {
 			glasses: getGlasses(usermodel.eyesight),
 			neanderthal: getNeanderthal(usermodel.neanderthal),
 			sex: usermodel.sex
+			//ANIM MODEL
 		};
 	}
 
@@ -249,8 +250,6 @@ APP.anim = function() {
 			tr = td.parent();
 		var sexTl = new TimelineMax();
 		sexTl.add(animText(animodel.sex, td, tr));
-		console.log(`prevSex: ${prevSex}`);
-		console.log(`currSex: ${currSex}`);
 
 		if (currSex === prevSex) {
 			return sexTl;
@@ -259,13 +258,13 @@ APP.anim = function() {
 				.set(APP.girlSVG, {autoAlpha:0})
 				.to(prevSVG, 1, {autoAlpha: 0, onComplete: function() {$('.vis__avatar').html(APP.girlSVG);}})
 				.to(APP.girlSVG, 1, {autoAlpha: 1});
-			return sexTl
+			return sexTl;
 		} else if (currSex === "male") {
 			sexTl
 				.set(APP.boySVG, {autoAlpha:0})
 				.to(prevSVG, 1, {autoAlpha: 0, onComplete: function() {$('.vis__avatar').html(APP.boySVG);}})
 				.to(APP.boySVG, 1, {autoAlpha: 1});
-			return sexTl			
+			return sexTl;			
 		}
 		return sexTl;
 	}
@@ -482,13 +481,13 @@ APP.res = function() {
 			return word.join('');
 		}
 		function publicFirstName() {
-			return capFirstLetter(APP.ranUser.results[0].user.name.first) || "Jane";
+			return capFirstLetter(APP.ranUser.results[0].name.first) || "Jane";
 		}
 		function publicLastName() {
-			return capFirstLetter(APP.ranUser.results[0].user.name.last) || "Doe";
+			return capFirstLetter(APP.ranUser.results[0].name.last) || "Doe";
 		}
 		function publicGender() {
-			return { phenotype_id: 'sex', value: APP.ranUser.results[0].user.gender || "female" };
+			return { phenotype_id: 'sex', value: APP.ranUser.results[0].gender || "female" };
 		}
 		function publicAncestry() {
 			// 23andMe ancestry array structure:
@@ -744,7 +743,6 @@ APP.init = function() {
 			// Show loading animation
 			var modal = $('.loading'),
 				letters = $('.loading span');
-				console.log(letters);
 			TweenMax.to(modal, 0.3, {autoAlpha: 1});
 			var loadingTl = new TimelineMax({delay: 0.4, repeat: -1, repeatDelay: 0.8});
 			loadingTl
@@ -760,9 +758,9 @@ APP.init = function() {
 			// $('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
 			//Second, get genetic data from 23andMe
 			$.get( '/results.php', function(data) {
-				// console.log(data);
-				// console.log(APP.res.errCheck(data));
-				// console.log(APP.model.createUserModel(APP.res.errCheck(data)));
+				// console.log('data', data);
+				// console.log( APP.res.errCheck(data));
+				// console.log( APP.model.createUserModel(APP.res.errCheck(data)));
 				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
 				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 
