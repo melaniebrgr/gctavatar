@@ -22,7 +22,7 @@
 			background-color: transparentize($white, 0);
 		}
 		&:after {
-			content: url(/img/dropdown-triangle.svg);
+			content: url(../img/dropdown-triangle.svg);
 			display: inline-block;
 			height: auto;
 			margin-left: 0.4em;
