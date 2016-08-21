@@ -82,14 +82,14 @@ APP.init = function() {
 	// AJAX request for boy and girl SVG; get random data on done
 	function getSVG() {
 		$.ajax({
-			url: '/img/boy-05.svg',
+			url: 'img/boy-05.svg',
 			dataType: 'xml'
 		})
 		.done(function( data, textStatus, jqXHR ){ 
 			APP.boySVG = $(data).find('svg');
 		});
 		$.ajax({
-			url: '/img/girl-08.svg',
+			url: 'img/girl-08.svg',
 			dataType: 'xml'
 		})
 		.done(function( data, textStatus, jqXHR ){ 
