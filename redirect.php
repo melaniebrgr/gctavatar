@@ -10,7 +10,7 @@ $post_field_array = array(
   'client_secret' => CLIENT_SECRET,
   'grant_type'    => 'authorization_code',
   'code'          => $code,
-  'redirect_uri'  => 'http://localhost:8888/redirect.php',
+  'redirect_uri'  => 'http://www.lab3d.io/GCTAvatar/redirect.php',
   'scope'         => 'basic names phenotypes:read:sex ancestry rs12913832 rs2153271 rs7349332 rs10034228 rs3827760 rs12896399 rs1667394 rs12821256 rs1805007 rs1805008 i3002507');
 
 // Encode field values for HTTP.
@@ -36,9 +36,9 @@ $name = "access_token";
 $value = $access_token;
 $expire = time()+86400;
 $path = "/";
-$domain = "localhost";
+$domain = "www.lab3d.io";
 $secure = false;
 $httponly = false;
 setcookie($name, $value, $expire, $path, $domain, $secure, $httponly);
 
-header("Location: http://localhost:8888/index.html");
+header("Location: http://www.lab3d.io/GCTAvatar/index.html");
