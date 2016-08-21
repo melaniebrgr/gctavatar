@@ -49,11 +49,11 @@ APP.init = function() {
 			.to(letters[3], 0.4, {y: 0, ease: Back.easeOut.config(2.5)});
 
 		//Second, get genetic data from 23andMe
-		$.get( '/results.php', function(data) {
+		$.get( 'results.php', function(data) {
 			// console.log('data', data);
-			console.log( APP.res.errCheck(data));
-			console.log( APP.model.createUserModel(APP.res.errCheck(data)));
-			console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
+			// console.log( APP.res.errCheck(data));
+			// console.log( APP.model.createUserModel(APP.res.errCheck(data)));
+			// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
 			// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 
 			// Set 23andMe user to public object properties
@@ -110,7 +110,7 @@ APP.init = function() {
 	// Functions to set up UI
 	// Set button as link to 23andMe authorization
 	function handle23andMeConnectBtn() {
-		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://localhost:8888/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
+		var link = 'https://api.23andme.com/authorize/?redirect_uri=http://www.lab3d.io/GCTAvatar/redirect.php&response_type=code&client_id=4fb9c5d63e52a08920c3c0c49183901f&scope=basic names phenotypes:read:sex ancestry'
 		publicGeneScope.forEach(function(el) {
 			link += ` ${el}`;
 		});
@@ -240,11 +240,15 @@ APP.init = function() {
 	return {
 		geneScope: publicGeneScope,
 		step1: publicStep1,
-		gradients: publicGradients
+		gradients: publicGradients,
+		get23andMeData: get23andMeData
 	};
 }();
 
 // On document ready
 $(function() {
 	APP.init.step1();
+	if (Cookies.get('access_token')) { 
+		APP.init.get23andMeData();
+	}
 });
