@@ -22,51 +22,49 @@ APP.init = function() {
 	// Preserves gradient data from initial SVG
 	var publicGradients = {};
 
+	function showResults() {
+		// hide connect view and show results view
+		$('.text__connect').toggle();
+		$('.text__results').toggle();
+
+		// Set up drowpdown menu and PNG download button
+		step2();		
+	}
+
 	// AJAX request to 23andMe
 	function get23andMeData() {
-		// If access_token is available skip authorization
-		if (Cookies.get('access_token')) {
-			
-			// Show loading animation
-			var modal = $('.loading'),
-				letters = $('.loading span');
-			TweenMax.to(modal, 0.3, {autoAlpha: 1});
-			var loadingTl = new TimelineMax({delay: 0.4, repeat: -1, repeatDelay: 0.8});
-			loadingTl
-				.to(letters[0], 0.4, {y: '-=25', ease: Power3.easeOut})
-				.to(letters[0], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
-				.to(letters[1], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
-				.to(letters[1], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
-				.to(letters[2], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
-				.to(letters[2], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
-				.to(letters[3], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
-				.to(letters[3], 0.4, {y: 0, ease: Back.easeOut.config(2.5)});
+		// Show loading animation
+		var modal = $('.loading'),
+			letters = $('.loading span');
+		TweenMax.to(modal, 0.3, {autoAlpha: 1});
+		var loadingTl = new TimelineMax({delay: 0.4, repeat: -1, repeatDelay: 0.8});
+		loadingTl
+			.to(letters[0], 0.4, {y: '-=25', ease: Power3.easeOut})
+			.to(letters[0], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
+			.to(letters[1], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
+			.to(letters[1], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
+			.to(letters[2], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
+			.to(letters[2], 0.4, {y: 0, ease: Back.easeOut.config(2.5)})
+			.to(letters[3], 0.4, {y: '-=25', ease: Power3.easeOut}, '-=0.4')
+			.to(letters[3], 0.4, {y: 0, ease: Back.easeOut.config(2.5)});
 
-			// $('.text').append('<img src=\"/img/loading_spinner.gif\" alt=\"loading spinner\" class=\"loading-spinner\">');
-			//Second, get genetic data from 23andMe
-			$.get( '/results.php', function(data) {
-				// console.log('data', data);
-				// console.log( APP.res.errCheck(data));
-				// console.log( APP.model.createUserModel(APP.res.errCheck(data)));
-				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
-				// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
+		//Second, get genetic data from 23andMe
+		$.get( '/results.php', function(data) {
+			// console.log('data', data);
+			console.log( APP.res.errCheck(data));
+			console.log( APP.model.createUserModel(APP.res.errCheck(data)));
+			console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.errCheck(data))));
+			// console.log( APP.anim.createAnimModel(APP.model.createUserModel(APP.res.getRandom23andMeUser())));
 
-				// Set 23andMe user and randow user to public object properties
-				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
-				APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.getRandom23andMeUser())));
-
-				// Hide loading modal, show results
-				TweenMax.to(modal, 0.3, {autoAlpha: 0});
-				$('.text__connect').toggle();
-				$('.text__results').toggle();
-
-				// Set up drowpdown menu and PNG download button
-				step2();
-
-				// Start animation
-				APP.anim.setMainTl(APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
-			});
-		}
+			// Set 23andMe user to public object properties
+			APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.errCheck(data))));
+			// Hide loading modal, show results
+			TweenMax.to(modal, 0.3, {autoAlpha: 0});
+			// Change view
+			showResults();
+			// Start animation
+			APP.anim.setMainTl(APP.model.get()[0]);
+		});
 	}
 	// AJAX request to Randomuser API; get 23andMe data on done
 	function getRandomData() {
@@ -76,7 +74,8 @@ APP.init = function() {
 		})
 		.done( function(data) {
 			APP.ranUser = data;
-			get23andMeData();
+			// Random user to public object properties
+			APP.model.set( APP.anim.createAnimModel( APP.model.createUserModel( APP.res.getRandom23andMeUser())));
 		});
 	}
 
@@ -116,9 +115,22 @@ APP.init = function() {
 			link += ` ${el}`;
 		});
 		$('.getAuth').click(function() {
-			window.location.href = link;
+			// If access_token is available skip authorization and retrieve data
+			if (Cookies.get('access_token')) { 
+				get23andMeData(); 
+			} else {
+				window.location.href = link;
+			}
 		});
 	}
+
+	function handleGenerateRanUserBtn() {
+		$('.noAuth').click(function() {
+			showResults();
+			APP.anim.setMainTl(APP.model.get()[0]);
+		});		
+	}
+
 	// Set height of avatar image to match width
 	function setVisAvatarHeight() {
 		$('.vis__avatar').height( $('.vis__avatar').width() );
@@ -132,10 +144,10 @@ APP.init = function() {
 		// Get every select option and append it as a div to the container
 		// On list-item click, set button text
 		var users = APP.model.get(),
-			userFilter = $('#user-filter');
-		for (var prop in users) {
-			userFilter.append(`<option>${prop}</option`);
-		}
+				userFilter = $('#user-filter');
+		users.forEach(function(el) {
+			userFilter.append(`<option>${el.base.fullname}</option`);
+		});
 		var dropdownMenu = $('<span>', { 
 			class: 'dropdown-menu',
 		    click: function(){ $(this).find('.list-items').slideToggle(100)}
@@ -163,7 +175,7 @@ APP.init = function() {
 					mainTl.progress(0);
 					mainTl.pause();
 					mainTl.clear();
-					APP.anim.setMainTl(APP.model.get()[text]);
+					APP.anim.setMainTl(APP.model.get()[i]);
 				}
 			});
 			listItems.append(item);
@@ -217,6 +229,7 @@ APP.init = function() {
 	function publicStep1() {
 		setVisAvatarHeight();
 		handle23andMeConnectBtn();
+		handleGenerateRanUserBtn();
 		getSVG();
 	}
 	function step2() {

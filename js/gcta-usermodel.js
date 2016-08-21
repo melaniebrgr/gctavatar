@@ -3,7 +3,7 @@ var APP = APP || {};
 // Create user model
 APP.model = function() {
 	// modelData variable will hold the error-checked reponse from 23andMe
-	var modelData = {};
+	var modelData = [];
 
 	// Functions to decode 23andMe genotype to phenotypes
 	function getEyeColor(b) {
@@ -160,12 +160,12 @@ APP.model = function() {
 				data.genotypes[9].call,
 				data.genotypes[10].call
 			),
-			sex: data.sex.value
+			sex: data.sex
 		};
 	}
 	function publicSet(animModel) {
 		// Setter expects animation object model
-		modelData[animModel.base.fullname] = animModel;
+		modelData.unshift(animModel);
 	}
 	function publicGet() {
 		return modelData;

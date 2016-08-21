@@ -17,7 +17,7 @@ APP.res = function() {
 			return capFirstLetter(APP.ranUser.results[0].name.last) || "Doe";
 		}
 		function publicGender() {
-			return { phenotype_id: 'sex', value: APP.ranUser.results[0].gender || "female" };
+			return { phenotype_id: 'sex', value: APP.ranUser.results[0].gender.value || "female" };
 		}
 		function publicAncestry() {
 			// 23andMe ancestry array structure:
@@ -198,40 +198,41 @@ APP.res = function() {
 
 	// For traits with error, set to random variables (eventually would want to prompt user for values)
 	function setErrField(data, prop) {
+		var fixedData = data;
 		switch (prop) {
 			case 'firstName':
-				data.firstName = getRandomData().firstName();
+				fixedData.firstName = getRandomData().firstName();
 				break;
 			case 'lastName':
-				data.lastName = getRandomData().lastName();
+				fixedData.lastName = getRandomData().lastName();
 				break;
 			case 'ancestry':
-				data.ancestry = getRandomData().ancestry(); 
+				fixedData.ancestry = getRandomData().ancestry(); 
 				break;
 			case 'genotypes':
-				data.genotypes = getRandomData().genotype();
+				fixedData.genotypes = getRandomData().genotype();
 				break;
 			case 'sex':
-				data.sex = getRandomData().gender();
+				fixedData.sex = getRandomData().gender().value;
 				break;
 			case 'neanderthal':
-				data.neanderthal = getRandomData().neanderthal();
+				fixedData.neanderthal = getRandomData().neanderthal();
 				break;
 		}
-		return data;
+		return fixedData;
 	}
 
 	// Check the AJAX response data for errors
 	function publicErrCheck(data) {
 		for (var prop in data) {
 			try {
-				if (data[prop] === null || data[prop].error) {
-					throw new Error( `No data available for trait: ${prop}`);
+				if (!data[prop] || data[prop].error) {
+					data = setErrField(data, prop);
+					throw new Error( `Error detected for trait "${prop}". Value of "${prop}"" set to "${data[prop]}"`);
 				}
 			} 
 			catch (error) {
 				console.error(error);
-				data = setErrField(data, prop);
 			}
 		}
 		return data;
