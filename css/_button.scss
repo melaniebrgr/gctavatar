@@ -1,7 +1,8 @@
 button, .button {
 	@extend .button-theme1;
 	display: inline-block;
-	margin: 0;
+	height: 70px;
+	margin-right: em(16px, 22px);
 	padding: em(16px, 22px) em(18px, 22px);
 }
 .button-theme1 {

@@ -388,7 +388,7 @@ h2 {
 
 p {
   color: #595959;
-  font-size: 1.1em;
+  font-size: 1.4em;
   line-height: 150%;
   margin-top: 12.7272727273px;
   margin-bottom: 12.7272727273px; }
@@ -428,7 +428,8 @@ a {
 
 button, .button {
   display: inline-block;
-  margin: 0;
+  height: 70px;
+  margin-right: 0.7272727273em;
   padding: 0.7272727273em 0.8181818182em; }
 
 .button-theme1, button, .button {
@@ -462,7 +463,7 @@ header {
   border-bottom: 1px solid #fff;
   box-shadow: 0 -2px 11px #35beb4; }
   .header-theme1 h1, header h1 {
-    font: 700 1.1em 'Cabin Sketch', sans-serif;
+    font: 700 1.4em 'Cabin Sketch', sans-serif;
     color: #F7323F; }
 
 .vis {
@@ -617,4 +618,4 @@ header {
   border-top: 1px solid #43bd97;
   box-shadow: 0 2px 11px #225f4c;
   color: #225f4c;
-  font: 400 0.75em "Cabin", sans-serif; }
+  font: 400 1.2em 'Cabin', sans-serif; }
