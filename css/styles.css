@@ -358,7 +358,7 @@ th {
 
 html {
   box-sizing: border-box;
-  font: 400 1em 'Cabin', sans-serif;
+  font: 400 12px 'Cabin', sans-serif;
   height: 100%; }
 
 *, *:before, *:after {
@@ -428,9 +428,9 @@ a {
 
 button, .button {
   display: inline-block;
-  height: 70px;
-  margin-right: 0.7272727273em;
-  padding: 0.7272727273em 0.8181818182em; }
+  height: 65px;
+  margin-right: 16px;
+  padding: 16px 22px; }
 
 .button-theme1, button, .button {
   -webkit-transition: all 0.18s ease-in-out;
@@ -546,7 +546,7 @@ header {
 .text__results--theme1, .text__results {
   color: #737373; }
   .text__results--theme1 table, .text__results table {
-    font-size: 1.125em; }
+    font-size: 16px; }
     .text__results--theme1 table thead, .text__results table thead {
       text-align: left; }
       .text__results--theme1 table thead tr th, .text__results table thead tr th {
@@ -554,7 +554,7 @@ header {
     .text__results--theme1 table tbody tr td:first-child, .text__results table tbody tr td:first-child {
       line-height: 2.8; }
     .text__results--theme1 table tbody td + td, .text__results table tbody td + td {
-      font-size: 1.5555555556em;
+      font-size: 26px;
       color: #404040; }
     .text__results--theme1 table tbody tr:first-child, .text__results table tbody tr:first-child {
       border-top: 3px solid #7edbd4; }
@@ -581,9 +581,9 @@ header {
   background-color: rgba(255, 255, 255, 0.7);
   border: 2px solid #fff;
   color: #404040;
-  font-size: 1.5em;
+  font-size: 1.375em;
   margin: 0;
-  padding: 0.3333333333em 0.4166666667em; }
+  padding: 16px 22px; }
   .dropdown-menu--theme1 button:hover, .dropdown-menu button:hover {
     background-color: white; }
   .dropdown-menu--theme1 button:after, .dropdown-menu button:after {
@@ -592,8 +592,8 @@ header {
     height: auto;
     margin-left: 0.4em;
     position: relative;
-    top: -0.125em;
-    width: 0.4166666667em; }
+    top: -3px;
+    width: 10px; }
 .dropdown-menu--theme1 .list-items, .dropdown-menu .list-items {
   background-color: white;
   text-decoration: none;

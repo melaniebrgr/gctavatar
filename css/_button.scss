@@ -1,9 +1,9 @@
 button, .button {
 	@extend .button-theme1;
 	display: inline-block;
-	height: 70px;
-	margin-right: em(16px, 22px);
-	padding: em(16px, 22px) em(18px, 22px);
+	height: 65px;
+	margin-right: 16px;
+	padding: 16px 22px;
 }
 .button-theme1 {
 	@include transition(all);

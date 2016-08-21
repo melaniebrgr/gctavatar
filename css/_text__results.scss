@@ -32,7 +32,7 @@
 .text__results--theme1 {
 	color: lighten($black, 45%);
 	table {
-		font-size: em(18px);
+		font-size: 16px;
 		thead {
 			text-align: left;
 			tr th {
@@ -44,7 +44,7 @@
 				line-height: 2.8;
 			}
 			td + td {
-				font-size: em(28px, 18px);
+				font-size: 26px;
 				color: lighten($black, 25%);
 			}
 			tr:first-child {

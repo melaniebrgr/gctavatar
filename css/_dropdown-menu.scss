@@ -15,9 +15,9 @@
 		background-color: transparentize($white, 0.3);
 		border: 2px solid $white;
 		color: lighten($black, 25%);
-		font-size: em(24px);
+		font-size: em(22px);
 		margin: 0;
-		padding: em(8px, 24px) em(10px, 24px);
+		padding: 16px 22px;
 		&:hover {
 			background-color: transparentize($white, 0);
 		}
@@ -27,8 +27,8 @@
 			height: auto;
 			margin-left: 0.4em;
 		    position: relative;
-		    top: em(-3px, 24px);
-			width: em(10px, 24px);
+		    top: -3px;
+			width: 10px;
 		}
 	}
 	.list-items {
